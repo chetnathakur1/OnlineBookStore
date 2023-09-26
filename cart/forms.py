@@ -3,6 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import *
 from django.forms import ModelForm
+from django import forms
 
 
 class NewUserForm(UserCreationForm):
@@ -40,3 +41,8 @@ class AddBookForm(ModelForm):
 		# 	'price': forms.DecimalField(attrs={'class':'form-control'}),
 		# 	'available-qunatity': forms.TextInput(attrs={'class':'form-control'})
 		# }
+
+
+
+class BookSearchForm(forms.Form):
+	query = forms.CharField(max_length=100, label='', widget=forms.TextInput(attrs={'placeholder': 'Search Books'}))

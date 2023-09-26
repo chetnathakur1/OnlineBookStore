@@ -1,24 +1,33 @@
+
 {% extends "base.html" %}
 
+{% load static %}
+
 {% block content %}
-<br/>
-<h2>Welcome to Online Bookstore</h2>
-<br/>
-<ul>
-    {% for book in books %}
-        <li>
-            <img src="{{ book.images.url }}" alt="{{ book.title }}"/>
-            <a href="{% url 'bookview' book.pk %}">  
-                <h2>{{ book.title }}</h2></a>
-                <p>Author: {{ book.author }}</p>
-                <p>Genre: {{ book.genre }}</p>
-                <p>Price: Rs.{{ book.price }}</p>
-                {% comment %} <p>Available Quantity: {{ book.available_quantity }}</p> {% endcomment %}
-        </li>
+<div class="text-center">
+    <h1 style="font-size: 36px; color: #333;">Welcome to Online Bookstore</h1>
+</div>
+    <div class="row">
+        {% for book in books %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <img src="{{ book.images.url }}" class="card-img-top" alt="{{ book.title }}"/>
+                    <div class="card-body">
+                        <a href="{% url 'bookview' book.pk %}">
+                        <h5 class="card-title">{{ book.title }}</h5></a>
+                        <p class="card-text">Author: {{ book.author }}</p>
+                        <p class="card-text">Price: Rs.{{ book.price }}</p>
+                        <!-- <a href="#" class="btn btn-primary">Add to Cart</a> -->
+                    </div>
+                </div>
+            </div>
         {% endfor %}
-    </ul>
+    </div>
+
 
 
 {% endblock %}
 
-
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'cart/static/css/styles.css' %}">
+{% endblock %}

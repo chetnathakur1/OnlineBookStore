@@ -1,0 +1,12 @@
+/* styles.css */
+/* Style the heading */
+h1 {
+    font-size: 36px;
+    color: #333;
+}
+
+/* Add additional styles as needed */
+.card {
+    border: 1px solid #ccc;
+    padding: 10px;
+}

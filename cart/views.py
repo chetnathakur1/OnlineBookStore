@@ -1,30 +1,21 @@
 from django.shortcuts import render, redirect
-from .forms import NewUserForm, AddBookForm
+from .forms import NewUserForm, AddBookForm, BookSearchForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from .models import *
 from django.views.generic import DetailView
 from django.contrib.auth.models import User
-from django.db.models import Q
+from django.db.models import query
+
+
 
 def home(request):
     books=Book.objects.all()
-    context={'books':books}
-    # if request.user.is_staff:
-    #     return render(request,'adminhome.html',context)
-    # else:    
-    return render(request,'home.html',context)
+    search_form = BookSearchForm()
+    return render(request, 'home.html', {'search_form': search_form, 'books': books})
 
-# def index(request):
-# 	search_book = request.GET.get('search')
 
-# 	if search_book:
-# 		book = Book.objects.filter(Q(title__icontains=search_book) & Q(content__icontains=search_book))
-# 	else:
-# 		book = Book.objects.all().order_by("-date_created")
-
-# 	return render(request,'base.html',{'book':book})
 
 class BookView(DetailView):
 	model = Book
@@ -108,4 +99,11 @@ def update_cart(request, cart_id):
     return redirect('viewcart')
 
 
+def search_books(request):
+    query = request.GET.get('query')
+    if query:
+        books = Book.objects.filter(title__icontains=query)
+    else:
+        books = Book.objects.all()
+    return render(request, 'search.html', {'books': books, 'query': query})
 
