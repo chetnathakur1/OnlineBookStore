@@ -24,8 +24,15 @@ class AddBookForm(ModelForm):
 	
 	class Meta:
 		model = Book
-		fields = '__all__'
-
+		fields = ('title','author','genre','price','available_quantity','image')
+		labels = {
+			'title': '',
+			'author' : '',
+			'genre' : '',
+			'price' :'',
+			'avialable_quantity': '',
+			'image' : '',
+		}
 		# widget = {
 		# 	'title': forms.TextInput(attrs={'class':'form-control'}),
 		# 	'author': forms.TextInput(attrs={'class':'form-control'}),

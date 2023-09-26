@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>{{ book.title }}</h1>
+
+<small>By: {{ book.author}} </small><br/>
+<hr>
+<br/>
+{{ book.image }}
+<p>Genre: {{ book.genre }}</p>
+<p>Price: Rs.{{ book.price }}</p>
+<p>Available Quantity: {{ book.available_quantity }}</p>
+
+<br/>
+
+
+<a href="{% url 'home' %}"><button type="button" class="btn btn-secondary">Back</button></a>
+<a class="btn btn-sm btn-info" href="{% url 'addtocart' book.id %}">Add to Cart</a>
+
+{% endblock %}

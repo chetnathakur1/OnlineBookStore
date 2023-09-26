@@ -4,30 +4,21 @@
 <br/>
 <h2>Welcome to Online Bookstore</h2>
 <br/>
-<table>
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Author</th>
-            <th>Genre</th>
-            <th>Price</th>
-            <th>Available Quantity</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for book in books %}
-            <div class="book">
-                <img src="{{ media.image.url }}" alt="{{ book.title }} Image">
-                <h2>{{ book.title }}</h2>
+<ul>
+    {% for book in books %}
+        <li>
+            <img src="{{ book.images.url }}" alt="{{ book.title }}"/>
+            <a href="{% url 'bookview' book.pk %}">  
+                <h2>{{ book.title }}</h2></a>
                 <p>Author: {{ book.author }}</p>
                 <p>Genre: {{ book.genre }}</p>
                 <p>Price: Rs.{{ book.price }}</p>
-                <p>Available Quantity: {{ book.quantity }}</p>
-            </div>
+                {% comment %} <p>Available Quantity: {{ book.available_quantity }}</p> {% endcomment %}
+        </li>
         {% endfor %}
-    </tbody>
-</table> 
-
+    </ul>
 
 
 {% endblock %}
+
+

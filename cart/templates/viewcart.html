@@ -1,0 +1,59 @@
+{% extends "base.html" %} 
+{% block content %}
+
+{% comment %} <div class="container jumbotron">
+    <div class="row">
+        <div class="col-lg-10">
+            <br>
+            <h5>Books:</h5>
+            <div class="card card-body">
+                <table class="table table-sm">
+                    <tr>
+                        <th>Title</th>
+                        <th>Price</th>
+                        <th>Available Quantity</th>
+                    </tr>
+                    {% for book in cart.books.all %}
+                    <tr>
+                        <td>{{book.title}}</td>
+                        <td>{{book.price}}</td>
+                        <td>{{book.available_quantity}}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+</div> {% endcomment %}
+
+
+<h2>Your Shopping Cart</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Book</th>
+                <th>Quantity</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for book in cart.book.all %}
+                <tr>
+                    <td>{{ cart.book.title }}</td>
+                    <td>
+                        <form method="POST" action="{% url 'update_cart' cart.id %}">
+                            {% csrf_token %}
+                            <input type="number" name="quantity" value="{{ cart.quantity }}" min="1">
+                            <button type="submit">Update</button>
+                        </form>
+                    </td>
+                    <td><a href="#">Remove</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+{% endblock %} 
+
+

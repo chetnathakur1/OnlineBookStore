@@ -18,17 +18,23 @@ class Book(models.Model):
     genre = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=10,decimal_places=2)
     available_quantity = models.PositiveIntegerField()
-    image = models.ImageField(upload_to='media/images',blank=True,null = True)
+    image = models.FileField(upload_to='images/',blank=True,null = True)
 
     def __str__(self):
-        return self.title
+        return self.title + ' | ' + str(self.author)
+    
+    def decrease_quantity(self,quantity):
+        if self.available_quantity >= quantity:
+            self.available_quantity -= quantity
+            self.save()
 
    
 class Cart(models.Model):
-    customer = models.OneToOneField(Customer, null=True,on_delete=models.CASCADE)
-    books = models.ManyToManyField(Book)
+    user = models.ForeignKey(User, null=True,on_delete=models.CASCADE)
+    book = models.ForeignKey('Book',null=True,on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
 
     def __str__(self):
-        return str(self.customer)
+        return f"{self.quantity} x {self.book.title}"
     
 
