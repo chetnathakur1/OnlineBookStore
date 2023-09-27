@@ -1,20 +1,25 @@
-from django.shortcuts import render, redirect
-from .forms import NewUserForm, AddBookForm, BookSearchForm
+from django.shortcuts import render, redirect, get_object_or_404
+from .forms import NewUserForm, AddBookForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from .models import *
 from django.views.generic import DetailView
 from django.contrib.auth.models import User
-from django.db.models import query
+from .models import Order 
+from django.core.paginator import Paginator
 
 
 
 def home(request):
-    books=Book.objects.all()
-    search_form = BookSearchForm()
-    return render(request, 'home.html', {'search_form': search_form, 'books': books})
-
+	books=Book.objects.all()
+	paginator = Paginator(books, 9)
+	page_number = request.GET.get('page')
+	page_obj = paginator.get_page(page_number)
+	genre = Book.objects.values('genre').distinct()
+	context = {'page_obj': page_obj,'genre':genre}
+	return render(request, 'home.html',context)
+	
 
 
 class BookView(DetailView):
@@ -64,46 +69,92 @@ def logout_request(request):
 
  
 def addbook(request):
-    form=AddBookForm()
-    if request.method=='POST':
-        form=AddBookForm(request.POST, request.FILES)
+    if request.method == 'POST':
+        form = AddBookForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-        return redirect('/')
- 
-    context={'form':form}
-    return render(request,'addbook.html',context)
+            return redirect('home') 
+    else:
+        form = AddBookForm()
+    return render(request, 'addbook.html', {'form': form})
  
 		
 
 def addtocart(request, book_id):
 		book=Book.objects.get(pk=book_id)
 		user = request.user
-		cart, created = Cart.objects.get_or_create(user=user, book=book)
-		if not created:
-			cart.quantity += 1
-			cart.save()
-		book.decrease_quantity(1)
+		if user.is_authenticated:
+			try:
+				cart_item = Cart.objects.get(user=user, book=book)
+				cart_item.quantity += 1
+				cart_item.save()
+			except Cart.DoesNotExist:
+				Cart.objects.create(user=user, book=book, quantity=1)
 		return redirect('viewcart')
 
-def viewcart(request):
-	cart = Cart.objects.filter(user = request.user)
-	return render(request, 'viewcart.html', {'cart':cart})
 
-def update_cart(request, cart_id):
-    cart = Cart.objects.get(pk=cart_id)
-    new_quantity = int(request.POST['quantity'])
-    if new_quantity > 0:
-        cart.quantity = new_quantity
-        cart.save()
+
+def viewcart(request):
+    cart_items = Cart.objects.filter(user=request.user)
+    cart_total = 0  
+    for item in cart_items:
+        item.total_price = item.book.price * item.quantity  # Calculate total price for each item
+        cart_total += item.total_price  # Add to the cart total
+    return render(request, 'viewcart.html', {'cart_items': cart_items, 'cart_total': cart_total})
+
+
+def update_cart(request, cart_item_id):
+    cart_item = Cart.objects.get(pk=cart_item_id)
+    if request.method == 'POST':
+        quantity = request.POST.get('quantity')
+        if int(quantity) > 0:
+            cart_item.quantity = quantity
+            cart_item.save()
+    return redirect('viewcart')
+		
+
+def remove_from_cart(request, cart_item_id):
+    cart_item = get_object_or_404(Cart, pk=cart_item_id)
+    cart_item.delete()
     return redirect('viewcart')
 
 
+def checkout(request):
+    cart_items = Cart.objects.filter(user=request.user)
+    total_price = sum(item.book.price * item.quantity for item in cart_items)
+    context = {'cart_items': cart_items, 'total_price': total_price}
+    return render(request, 'checkout.html', context)
+
+
+def place_order(request):
+    if request.method == 'POST':
+        cart_items = Cart.objects.filter(user=request.user)
+        order = Order.objects.create(user=request.user)
+        for item in cart_items:
+            order.items.create(book=item.book, quantity=item.quantity)
+            item.book.quantity_available -= item.quantity
+            item.book.save()
+        cart_items.delete()
+        return redirect('order_confirmation') 
+    return redirect('checkout')
+
+
+
 def search_books(request):
-    query = request.GET.get('query')
-    if query:
-        books = Book.objects.filter(title__icontains=query)
-    else:
-        books = Book.objects.all()
-    return render(request, 'search.html', {'books': books, 'query': query})
+	if request.method == "POST":
+		searched = request.POST['searched']
+		books = Book.objects.filter(title__contains=searched)
+
+		return render(request,'search.html',{'searched':searched, 'books':books})
+	else:
+	   return render(request,'search.html',{})
+
+
+
+def filterbooks(request,category):
+	book_category = Book.objects.filter(genre=category)
+	genre = Book.objects.values('genre').distinct()
+	return render(request, 'filter.html', context={'book_category':book_category,'genre':genre})
+			
+
 

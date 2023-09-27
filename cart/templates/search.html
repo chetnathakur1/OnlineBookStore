@@ -2,16 +2,29 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Search Results for "{{ query }}"</h1>
-    <div class="row">
-        {% for book in books %}
+    <center>
+        {% if searched %}
+            <h1>You searched for {{searched}} </h1>
+            <br/>
+            {% for book in books %}
             <div class="col-md-4 mb-4">
                 <div class="card">
-                    
+                    <img src="{{ book.images.url }}" class="card-img-top" alt="{{ book.title }}"/>
+                    <div class="card-body">
+                        <a href="{% url 'bookview' book.pk %}">
+                        <h5 class="card-title">{{ book.title }}</h5></a>
+                        <p class="card-text">Author: {{ book.author }}</p>
+                        <p class="card-text">Price: Rs.{{ book.price }}</p>
+                        <!-- <a href="#" class="btn btn-primary">Add to Cart</a> -->
+                    </div>
                 </div>
             </div>
-        {% empty %}
-            <p>No results found.</p>
-        {% endfor %}
-    </div>
+
+            {% endfor %}
+        {% else %}
+            <h1>Forget to Search!</h1>
+        {% endif %}
+    
+    </center>
+
 {% endblock %}

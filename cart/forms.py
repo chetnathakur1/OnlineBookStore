@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import *
 from django.forms import ModelForm
-from django import forms
+
 
 
 class NewUserForm(UserCreationForm):
@@ -26,23 +26,15 @@ class AddBookForm(ModelForm):
 	class Meta:
 		model = Book
 		fields = ('title','author','genre','price','available_quantity','image')
-		labels = {
-			'title': '',
-			'author' : '',
-			'genre' : '',
-			'price' :'',
-			'avialable_quantity': '',
-			'image' : '',
-		}
-		# widget = {
-		# 	'title': forms.TextInput(attrs={'class':'form-control'}),
-		# 	'author': forms.TextInput(attrs={'class':'form-control'}),
-		# 	'genre': forms.TextInput(attrs={'class':'form-control'}),
-		# 	'price': forms.DecimalField(attrs={'class':'form-control'}),
-		# 	'available-qunatity': forms.TextInput(attrs={'class':'form-control'})
+		# labels = {
+		# 	'title': '',
+		# 	'author' : '',
+		# 	'genre' : '',
+		# 	'price' :'',
+		# 	'avialable_quantity': '',
+		# 	'image' : '',
 		# }
+	
 
 
 
-class BookSearchForm(forms.Form):
-	query = forms.CharField(max_length=100, label='', widget=forms.TextInput(attrs={'placeholder': 'Search Books'}))
