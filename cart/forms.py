@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import *
 from django.forms import ModelForm
-
+from django import forms
 
 
 class NewUserForm(UserCreationForm):
@@ -36,5 +36,5 @@ class AddBookForm(ModelForm):
 		# }
 	
 
-
-
+class AddToCartForm(forms.Form):
+    quantity = forms.IntegerField(min_value=1)

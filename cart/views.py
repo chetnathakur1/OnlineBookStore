@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import NewUserForm, AddBookForm
+from .forms import NewUserForm, AddBookForm,  AddToCartForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
@@ -78,8 +78,34 @@ def addbook(request):
         form = AddBookForm()
     return render(request, 'addbook.html', {'form': form})
  
-		
 
+
+# def addtocart(request, book_id):
+#     book = get_object_or_404(Book, id=book_id)
+#     form = AddToCartForm(request.POST or None)
+
+#     if request.method == 'POST':
+#         if form.is_valid():
+#             requested_quantity = form.cleaned_data['quantity']
+
+#             if requested_quantity <= book.available_quantity:
+#                 if 'cart' not in request.session:
+#                     request.session['cart'] = {}
+#                 cart = request.session['cart']
+
+#                 if book_id in cart:
+#                     cart[book_id] += requested_quantity
+#                 else:
+#                     cart[book_id] = requested_quantity
+
+#                 book.available_quantity -= requested_quantity
+#                 book.save()
+
+#                 return redirect('viewcart')  
+#             else:
+#                 form.add_error('quantity', 'Requested quantity exceeds available stock.')
+
+#     return render(request, 'bookview.html', {'book': book, 'form': form})
 def addtocart(request, book_id):
 		book=Book.objects.get(pk=book_id)
 		user = request.user
@@ -92,14 +118,12 @@ def addtocart(request, book_id):
 				Cart.objects.create(user=user, book=book, quantity=1)
 		return redirect('viewcart')
 
-
-
 def viewcart(request):
     cart_items = Cart.objects.filter(user=request.user)
     cart_total = 0  
     for item in cart_items:
-        item.total_price = item.book.price * item.quantity  # Calculate total price for each item
-        cart_total += item.total_price  # Add to the cart total
+        item.total_price = item.book.price * item.quantity  
+        cart_total += item.total_price  
     return render(request, 'viewcart.html', {'cart_items': cart_items, 'cart_total': cart_total})
 
 

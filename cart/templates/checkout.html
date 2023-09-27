@@ -3,11 +3,11 @@
 {% block content %}
 <center>
 <h1>Checkout</h1>
-<p>Total Amount: Rs.{{ total_price }}</p>
+<p>Total Amount: &#8377; {{ total_price }}</p>
 <form method="post" action="{% url 'placeorder' %}">
     {% csrf_token %}
     
-    <input class="btn btn-success" type="submit" value="Place Order">
+    <input class="btn btn-sm btn-success" type="submit" value="Place Order">
 </form>
 </center>
 {% endblock %}

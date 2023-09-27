@@ -1,17 +1,68 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+
+{% block title %}{{ cats }}{% endblock %}
 
 {% block content %}
-  
-<div class="dropdown">
-    <a class="nav-link dropdown-toggle" href="#" id="genreDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Filter By Genre
-    </a>
-    <div class="dropdown-menu" aria-labelledby="genreDropdown">
-        <a class="dropdown-item" href="#" data-genre="all">All Genres</a>
-        {% for genre in genres %}
-        <a class="dropdown-item" href="#" data-genre="{{ genre }}">{{ genre }}</a>
+
+
+{% if book_category %}
+
+
+<div class="container mt-4">
+    <div class="row">
+        <!-- Product Cards -->
+        {% for book in book_category %}
+        <div class="col-md-4 mb-4">
+            <div class="card product-card">
+                <div class="card-body">
+                    <a href="{% url 'bookview' book.id %}"class="text-success" ><h5 class="card-title">{{ book.title }}</h5></a>
+                    <p class="card-text">{{ book.genre}}</p>
+                    <p class="card-text">Author: {{ book.author }}</p>
+                    <p class="card-text">Price: &#8377; {{ book.price }}</p>
+                    <!-- <p class="card-text">Average Rating: {% if book.average_rating %}{{ book.average_rating|floatformat:'0' }} &#9733; out of 5 &#9733;{% else %}Not rated{% endif %}</p>
+                    <a href="#" class="btn btn-primary">Add to Cart</a>
+                    <a href="#" class="btn btn-warning">Buy</a> -->
+                    
+                </div>
+            </div>
+        </div>
         {% endfor %}
     </div>
 </div>
+
+<!-- Pagination Controls -->
+{% if is_paginated %}
+<div class="container mt-4">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        
+            <li class="page-item">
+                <a class="page-link" href="?page=1">&laquo; First</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+            </li>
+        {% endif %}
+
+        <li class="page-item active">
+            <span class="page-link">{{ page_obj.number }}</span>
+        </li>
+
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+            </li>
+        {% endif %}
+    </ul>
+</div>
+{% endif %}
+{% else %}
+    <div class="my-4">
+        <strong class="text-danger my-4"><H3>Sorry no books available. </H3></strong>
+    </div>
+{% endif %}
 
 {% endblock %}
