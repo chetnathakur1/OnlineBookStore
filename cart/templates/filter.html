@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ cats }}{% endblock %}
+{% block title %}Filter By Genre{% endblock %}
 
 {% block content %}
 
@@ -25,9 +25,9 @@
                     <a href="#" class="btn btn-primary">Add to Cart</a>
                     <a href="#" class="btn btn-warning">Buy</a> -->
                     {% if book.available_quantity > 0 %}
-                        <span class="text-success">In Stock</span>
+                        <span class="p-2 mb-2 bg-success text-white">In Stock</span>
                     {% else %}
-                        <span class="text-danger">Out of Stock</span>
+                        <span class="p-2 mb-2 bg-danger text-white">Out of Stock</span>
                     {% endif %}
                     
                 </div>

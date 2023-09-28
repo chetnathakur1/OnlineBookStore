@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import BookView, register_request
+from .views import BookView
 from django.contrib.auth import views as auth_views
 
 

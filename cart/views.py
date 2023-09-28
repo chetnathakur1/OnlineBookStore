@@ -84,26 +84,26 @@ def addbook(request):
 @login_required
 def addtocart(request, book_id):
     book = get_object_or_404(Book, id=book_id)
-
-    order, created = Order.objects.get_or_create(user=request.user, status='cart')
-    quantity = int(request.POST.get('quantity', 1))
+    try:
+        quantity = int(request.POST.get('quantity', 1))
+        if quantity < 1:
+            raise ValueError()
+    except (TypeError, ValueError):
+        messages.error(request, 'Please enter a valid quantity.')
+        return redirect('viewcart')
     
     if quantity > book.available_quantity:
         return render(request, 'emptycart.html', {'message': 'Cannot add more items than available.'})
+
+    user = request.user     
+    created = Cart.objects.filter(user=user, book = book).first()
     
-    item_price = book.price * quantity
-    
-   
-    order_item, created = OrderItem.objects.get_or_create(order=order, book=book)
-    
-    if not created:
-        order_item.quantity += quantity
-        order_item.item_price = item_price 
-        order_item.save()
+    if created:
+        created.quantity += quantity
+        created.save()
     else:
-        order_item.quantity = quantity
-        order_item.item_price = item_price  
-        order_item.save()
+        cart_item = Cart(user=user,book=book,quantity=quantity)
+        cart_item.save()
     
     book.available_quantity -= quantity
     book.save()
@@ -113,7 +113,7 @@ def addtocart(request, book_id):
 
 @login_required
 def viewcart(request):
-    cart_items = Cart.objects.filter(user=request.user)
+    cart_items = Cart.objects.filter(user=request.user).order_by('-date_added')
     cart_total = 0  
     for item in cart_items:
         item.total_price = item.book.price * item.quantity  
@@ -124,16 +124,34 @@ def viewcart(request):
 def update_cart(request, cart_item_id):
     cart_item = Cart.objects.get(pk=cart_item_id)
     if request.method == 'POST':
-        quantity = request.POST.get('quantity')
-        if int(quantity) > 0:
+        quantity = int(request.POST.get('quantity'))
+        if quantity <= 0:
+            messages.error(request, 'Please enter a valid quantity.')
+
+        elif quantity > cart_item.book.available_quantity:
+            messages.error(request, 'The requested quantity exceeds the available quantity.')
+
+        else:
+            new_quantity = quantity - cart_item.quantity
             cart_item.quantity = quantity
             cart_item.save()
+            cart_item.book.available_quantity  -= new_quantity
+            cart_item.book.save()
     return redirect('viewcart')
 		
+
+
 @login_required
 def remove_from_cart(request, cart_item_id):
-    cart_item = get_object_or_404(Cart, pk=cart_item_id)
-    cart_item.delete()
+    cart_item = get_object_or_404(Cart, pk=cart_item_id, user=request.user)
+    
+    if cart_item.user == request.user:
+        cart_quantity = cart_item.quantity
+        book = cart_item.book
+        
+        cart_item.delete()
+        book.available_quantity += cart_quantity
+        book.save()
     return redirect('viewcart')
 
 

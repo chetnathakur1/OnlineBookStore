@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
+from django.utils import timezone
 
 class Customer(models.Model):
     username = models.CharField(max_length=255,unique=True)
@@ -19,6 +20,9 @@ class Book(models.Model):
     price = models.DecimalField(max_digits=10,decimal_places=2)
     available_quantity = models.PositiveIntegerField()
     image = models.ImageField(upload_to='images/', height_field=None, width_field=None, max_length=None,blank=True,null = True)
+    created_on = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    updated_on = models.DateTimeField(auto_now=True, blank=True, null=True)
+
 
     def __str__(self):
         return self.title + ' | ' + str(self.author)
@@ -31,18 +35,18 @@ class Book(models.Model):
    
 class Cart(models.Model):
     user = models.ForeignKey(User, null=True,on_delete=models.CASCADE)
-    book = models.ForeignKey(Book,null=True,on_delete=models.CASCADE)
+    book = models.ForeignKey(Book,null=True,on_delete=models.SET_NULL)
     quantity = models.PositiveIntegerField(default=1)
-
+    date_added = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     def __str__(self):
         return f"{self.quantity} x {self.book.title}"
     
 
 
 class Order(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE) 
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True) 
     items = models.ManyToManyField(Book, through='OrderItem')
-    order_date = models.DateTimeField(auto_now_add=True)
+    order_date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     total_price = models.DecimalField(max_digits=10, decimal_places=2,null=True) 
 
     status_choices = (

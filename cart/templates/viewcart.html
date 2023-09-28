@@ -35,6 +35,8 @@
            
             {% for cart_item in cart_items %}
                 <tr>
+                    <!-- <img class="card-img-top" src="{% static 'images/book.jpg' %}" class="card-img-top" alt="{{ book.title }}"/> -->
+
                     <td>{{ cart_item.book.title }}</td>
                     
                     <td>
@@ -44,7 +46,7 @@
                             <button type="submit" class="btn btn-sm btn-info" >Update</button>
                         </form>
                     </td>
-                    <td>{{ cart_item.book.price }}</td>
+                    <td>&#8377; {{ cart_item.book.price }}</td>
                     <td>{{ cart_item.total_price }}</td>
                     <td><a class="btn btn-sm btn-warning" href="{% url 'remove_from_cart' cart_item.id %}">Remove</a></td>
                 </tr>
@@ -54,7 +56,7 @@
         </tbody>
     </table>
 
-    <p>Total: {{ cart_total }}</p>
+    <p>Total:&#8377; {{ cart_total }}</p>
 <a href="{% url 'home'  %}"><button type="button" class="btn btn-sm btn-secondary">Back</button></a>
 <a class="btn btn-sm btn-info" href="{% url 'checkout'  %}">Proceed to Checkout</a>
 
