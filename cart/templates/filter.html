@@ -4,7 +4,7 @@
 
 {% block content %}
 
-
+{% load static %}
 {% if book_category %}
 
 
@@ -13,24 +13,33 @@
         <!-- Product Cards -->
         {% for book in book_category %}
         <div class="col-md-4 mb-4">
-            <div class="card product-card">
+            <div class="card product-card" style="width: 19rem;">
+                <img class="card-img-top" src="{% static 'images/book.jpg' %}" class="card-img-top" alt="{{ book.title }}"/>
                 <div class="card-body">
-                    <a href="{% url 'bookview' book.id %}"class="text-success" ><h5 class="card-title">{{ book.title }}</h5></a>
+                    <a href="{% url 'bookview' book.id %}"class="text-dark" >
+                    <h5 class="card-title">{{ book.title }}</h5></a>
                     <p class="card-text">{{ book.genre}}</p>
                     <p class="card-text">Author: {{ book.author }}</p>
                     <p class="card-text">Price: &#8377; {{ book.price }}</p>
                     <!-- <p class="card-text">Average Rating: {% if book.average_rating %}{{ book.average_rating|floatformat:'0' }} &#9733; out of 5 &#9733;{% else %}Not rated{% endif %}</p>
                     <a href="#" class="btn btn-primary">Add to Cart</a>
                     <a href="#" class="btn btn-warning">Buy</a> -->
+                    {% if book.available_quantity > 0 %}
+                        <span class="text-success">In Stock</span>
+                    {% else %}
+                        <span class="text-danger">Out of Stock</span>
+                    {% endif %}
                     
                 </div>
             </div>
         </div>
+
         {% endfor %}
+        <a href="{% url 'home' %}"><button type="button" class="btn btn-sm btn-secondary">Back</button></a>
     </div>
 </div>
 
-<!-- Pagination Controls -->
+<!-- Pagination Controls -->    
 {% if is_paginated %}
 <div class="container mt-4">
     <ul class="pagination justify-content-center">

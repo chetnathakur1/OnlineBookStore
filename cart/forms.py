@@ -36,5 +36,3 @@ class AddBookForm(ModelForm):
 		# }
 	
 
-class AddToCartForm(forms.Form):
-    quantity = forms.IntegerField(min_value=1)

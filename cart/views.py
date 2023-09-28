@@ -1,14 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import NewUserForm, AddBookForm,  AddToCartForm
+from .forms import NewUserForm, AddBookForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from .models import *
 from django.views.generic import DetailView
 from django.contrib.auth.models import User
-from .models import Order 
+from .models import Order ,OrderItem
 from django.core.paginator import Paginator
-
+from django.contrib.auth.decorators import login_required
 
 
 def home(request):
@@ -38,6 +38,8 @@ def register_request(request):
 		messages.error(request, "Unsuccessful registration. Invalid information.")
 	form = NewUserForm()
 	return render (request=request, template_name="register.html", context={"register_form":form})
+
+
 
 
 
@@ -79,45 +81,37 @@ def addbook(request):
     return render(request, 'addbook.html', {'form': form})
  
 
-
-# def addtocart(request, book_id):
-#     book = get_object_or_404(Book, id=book_id)
-#     form = AddToCartForm(request.POST or None)
-
-#     if request.method == 'POST':
-#         if form.is_valid():
-#             requested_quantity = form.cleaned_data['quantity']
-
-#             if requested_quantity <= book.available_quantity:
-#                 if 'cart' not in request.session:
-#                     request.session['cart'] = {}
-#                 cart = request.session['cart']
-
-#                 if book_id in cart:
-#                     cart[book_id] += requested_quantity
-#                 else:
-#                     cart[book_id] = requested_quantity
-
-#                 book.available_quantity -= requested_quantity
-#                 book.save()
-
-#                 return redirect('viewcart')  
-#             else:
-#                 form.add_error('quantity', 'Requested quantity exceeds available stock.')
-
-#     return render(request, 'bookview.html', {'book': book, 'form': form})
+@login_required
 def addtocart(request, book_id):
-		book=Book.objects.get(pk=book_id)
-		user = request.user
-		if user.is_authenticated:
-			try:
-				cart_item = Cart.objects.get(user=user, book=book)
-				cart_item.quantity += 1
-				cart_item.save()
-			except Cart.DoesNotExist:
-				Cart.objects.create(user=user, book=book, quantity=1)
-		return redirect('viewcart')
+    book = get_object_or_404(Book, id=book_id)
 
+    order, created = Order.objects.get_or_create(user=request.user, status='cart')
+    quantity = int(request.POST.get('quantity', 1))
+    
+    if quantity > book.available_quantity:
+        return render(request, 'emptycart.html', {'message': 'Cannot add more items than available.'})
+    
+    item_price = book.price * quantity
+    
+   
+    order_item, created = OrderItem.objects.get_or_create(order=order, book=book)
+    
+    if not created:
+        order_item.quantity += quantity
+        order_item.item_price = item_price 
+        order_item.save()
+    else:
+        order_item.quantity = quantity
+        order_item.item_price = item_price  
+        order_item.save()
+    
+    book.available_quantity -= quantity
+    book.save()
+    
+    return redirect('viewcart')
+
+
+@login_required
 def viewcart(request):
     cart_items = Cart.objects.filter(user=request.user)
     cart_total = 0  
@@ -126,7 +120,7 @@ def viewcart(request):
         cart_total += item.total_price  
     return render(request, 'viewcart.html', {'cart_items': cart_items, 'cart_total': cart_total})
 
-
+@login_required
 def update_cart(request, cart_item_id):
     cart_item = Cart.objects.get(pk=cart_item_id)
     if request.method == 'POST':
@@ -136,7 +130,7 @@ def update_cart(request, cart_item_id):
             cart_item.save()
     return redirect('viewcart')
 		
-
+@login_required
 def remove_from_cart(request, cart_item_id):
     cart_item = get_object_or_404(Cart, pk=cart_item_id)
     cart_item.delete()

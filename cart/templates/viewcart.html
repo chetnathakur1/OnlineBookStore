@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 
-{% block content %}
+{% block title %}View Cart{% endblock %}
 
+{% block content %}
+{% load static %}
 <style>
     
     .table {
@@ -30,14 +32,15 @@
             </tr>
         </thead>
         <tbody>
-            
+           
             {% for cart_item in cart_items %}
                 <tr>
                     <td>{{ cart_item.book.title }}</td>
+                    
                     <td>
                         <form method="post" action="{% url 'update_cart' cart_item.id %}">
                             {% csrf_token %}
-                            <input type="number" name="quantity" value="{{ cart_item.quantity }}" min="1">
+                            <input type="number" class="form-control" id="quantity" name="quantity" min="1" max="{{ book.available_quantity }}" value="{{ cart_item.quantity }}">
                             <button type="submit" class="btn btn-sm btn-info" >Update</button>
                         </form>
                     </td>
@@ -46,7 +49,7 @@
                     <td><a class="btn btn-sm btn-warning" href="{% url 'remove_from_cart' cart_item.id %}">Remove</a></td>
                 </tr>
             {% endfor %}
-
+            </div>
         
         </tbody>
     </table>

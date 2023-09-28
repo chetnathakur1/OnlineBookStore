@@ -2,16 +2,23 @@
 
 {% block content %}
 <center>
-<h1>Add New Book</h1>
 <br/><br/>
-<div class="form group">
-    
-    <form method="post" action="" enctype="
-    multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input class="btn btn-success" type="submit" value="Add Book">
-    </form>
+<div class='container'>
+    <div class="col-md-4 mb-4">
+        <div class="card" style="width: 25rem;">
+            <h1>Add New Book</h1>
+            <br/><br/>
+            <div class="form group">
+                
+                <form method="post" action="" enctype="
+                multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input class="btn btn-success" type="submit" value="Add Book">
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 </center>
 {% endblock %}

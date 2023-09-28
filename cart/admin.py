@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Customer, Book, Cart, Order, OrderItem
+from .models import Customer, Cart, Order, OrderItem
 from cart import models
 
 

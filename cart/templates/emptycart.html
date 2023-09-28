@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<br/><br/>
+<center>
+<div class="container">
+    <div class="col-md-6">
+        <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading">Out of Stock !!!</h4>
+            <p>{{ message }}</p>
+        </div>
+        <a href="{% url 'home' %}" class="btn btn-sm btn-secondary">Back to Home</a>
+    </div>
+</div>
+</center>
+{% endblock %}
