@@ -10,7 +10,7 @@
         <h2>Installation</h2>
         <ol>
             <li>Clone the repository:
-                <pre><code>git clone https://github.com/yourusername/online-bookstore.git</code></pre>
+                <pre><code>git clone https://github.com/chetnathakur1/OnlineBookStore.git</code></pre>
             </li>
             <li>Create a virtual environment:
                 <pre><code>python -m venv venv</code></pre>
