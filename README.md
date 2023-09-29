@@ -15,7 +15,7 @@
             <li>Create a virtual environment:
                 <pre><code>python -m venv venv</code></pre>
             </li>
-            <!-- Add the remaining installation steps here -->
+            
         </ol>
     </section>
   </body>
