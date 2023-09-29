@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.urls import reverse
-from django.utils import timezone
+
 
 class Customer(models.Model):
     username = models.CharField(max_length=255,unique=True)
@@ -40,7 +39,7 @@ class Cart(models.Model):
     date_added = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     def __str__(self):
         return f"{self.quantity} x {self.book.title}"
-    
+
 
 
 class Order(models.Model):
@@ -48,7 +47,7 @@ class Order(models.Model):
     items = models.ManyToManyField(Book, through='OrderItem')
     order_date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     total_price = models.DecimalField(max_digits=10, decimal_places=2,null=True) 
-
+    
     status_choices = (
         ('cart', 'Cart'),
         ('completed', 'Completed'),
@@ -60,6 +59,7 @@ class Order(models.Model):
         return f'Order #{self.pk}'
 
 class OrderItem(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     order = models.ForeignKey(Order,related_name='order_item',null=True, on_delete=models.CASCADE)
     book = models.ForeignKey(Book,null=True, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
@@ -68,3 +68,17 @@ class OrderItem(models.Model):
     def __str__(self):
         return f'{self.quantity} x {self.book.title}'
     
+
+class ShippingAddress(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank = True, null=True)
+    order = models.ForeignKey(Order, on_delete=models.SET_NULL, blank=True, null=True)
+    street = models.CharField(max_length=100, null=True)
+    city = models.CharField(max_length=50, null=True)
+    state = models.CharField(max_length=50, null=True)
+    postal_code = models.CharField(max_length=10, null=True)
+    country = models.CharField(max_length=50, null=True)
+    date_added = models.DateTimeField(auto_now_add=True,blank=True, null=True)
+    is_default = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.user.username}'s Shipping Address"

@@ -1,29 +1,35 @@
 
 {% extends "base.html" %}
 
+{% load static %}
+
 {% block content %}
     <center>
         {% if searched %}
             <h1>You searched for {{searched}} </h1>
             <br/>
-            {% for book in books %}
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <img src="{{ book.images.url }}" class="card-img-top" alt="{{ book.title }}"/>
-                    <div class="card-body">
-                        <a href="{% url 'bookview' book.pk %}">
-                        <h5 class="card-title">{{ book.title }}</h5></a>
-                        <p class="card-text">Author: {{ book.author }}</p>
-                        <p class="card-text">Price: &#8377; {{ book.price }}</p>
-                        <!-- <a href="#" class="btn btn-primary">Add to Cart</a> -->
+            <div class = 'container'>
+                <div class="row">
+                    {% for book in books %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card" style="width: 19rem;">
+                            <img class="card-img-top" src="{% static 'images/book.jpg' %}" class="card-img-top" alt="{{ book.title }}"/>
+                            <div class="card-body">
+                                <a href="{% url 'bookview' book.pk %}">
+                                <h5 class="card-title">{{ book.title }}</h5></a>
+                                <p class="card-text">Author: {{ book.author }}</p>
+                                <p class="card-text">Price: &#8377; {{ book.price }}</p>
+                                <!-- <a href="#" class="btn btn-primary">Add to Cart</a> -->
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
 
-            {% endfor %}
-        {% else %}
-            <h1>Forget to Search!</h1>
-        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>  
+                {% else %}
+                    <h1>Forget to Search!</h1>
+                {% endif %}
     
     </center>
 

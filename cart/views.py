@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import NewUserForm, AddBookForm
+from .forms import NewUserForm, AddBookForm, ShippingAddressForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
-from django.contrib.auth.forms import AuthenticationForm
+from .forms import RememberMeAuthenticationForm
 from .models import *
 from django.views.generic import DetailView
 from django.contrib.auth.models import User
-from .models import Order ,OrderItem
+from .models import Order 
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 
@@ -40,27 +40,32 @@ def register_request(request):
 	return render (request=request, template_name="register.html", context={"register_form":form})
 
 
-
-
-
 def login_request(request):
-	if request.method == "POST":
-		form = AuthenticationForm(request, data=request.POST)
-		if form.is_valid():
-			username = form.cleaned_data.get('username')
-			password = form.cleaned_data.get('password')
-			# remember_me = form.cleaned_data['remember_me']
-			user = authenticate(request,username=username, password=password)
-			if user is not None:
-				login(request, user)
-				messages.info(request, f"You are now logged in as {username}.")
-				return redirect("home")
-			else:
-				messages.error(request,"Invalid username or password.")
-		else:
-			messages.error(request,"Invalid username or password.")
-	form = AuthenticationForm()
-	return render(request=request, template_name="login.html", context={"login_form":form})
+    if request.method == "POST":
+        form = RememberMeAuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            remember_me = form.cleaned_data.get('remember_me')
+
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                if remember_me:
+                    request.session.set_expiry(60 * 60 * 24 * 14)
+                else:
+                    request.session.set_expiry(1800)
+
+                login(request, user)
+                messages.info(request, f"You are now logged in as {username}.")
+                return redirect("home")
+            else:
+                messages.error(request, "Invalid username or password.")
+        else:
+            messages.error(request, "Invalid username or password.")
+    else:
+        form = RememberMeAuthenticationForm()
+    return render(request=request, template_name="login.html", context={"login_form": form})
+
 
 
 def logout_request(request):
@@ -155,24 +160,72 @@ def remove_from_cart(request, cart_item_id):
     return redirect('viewcart')
 
 
+
+@login_required
 def checkout(request):
-    cart_items = Cart.objects.filter(user=request.user)
-    total_price = sum(item.book.price * item.quantity for item in cart_items)
-    context = {'cart_items': cart_items, 'total_price': total_price}
+    user = request.user
+    cart_items = Cart.objects.filter(user=user)
+
+    for item in cart_items:
+        item.total_price = item.book.price * item.quantity
+    total_price = sum(item.total_price for item in cart_items)
+    try:
+        default_shipping_address = ShippingAddress.objects.get(user=user, is_default=True)
+    except ShippingAddress.DoesNotExist:
+        default_shipping_address = None
+
+    other_shipping_addresses = ShippingAddress.objects.filter(user=user, is_default =False)
+
+    if request.method == 'POST':
+        form = ShippingAddressForm(request.POST)
+        if form.is_valid():
+            shipping_address = form.save(commit=False)
+            shipping_address.user = user
+            shipping_address.save()
+            ShippingAddress.objects.filter(user=user).exclude(id=shipping_address.id).update(is_default=False)
+
+            order = Order(user=user, total_amount=total_price)
+            order.save()
+            order.items.set(cart_items)
+
+            return redirect('home')
+    else:
+        form = ShippingAddressForm(instance=default_shipping_address)
+    context = {
+        'cart_items': cart_items,
+        'total_price': total_price,
+        'form': form,
+        'shipping_address': default_shipping_address,
+        'other_addresses': default_shipping_address,
+    }
+
     return render(request, 'checkout.html', context)
 
 
-def place_order(request):
+@login_required
+def add_shipping_address(request):
     if request.method == 'POST':
-        cart_items = Cart.objects.filter(user=request.user)
-        order = Order.objects.create(user=request.user)
-        for item in cart_items:
-            order.items.create(book=item.book, quantity=item.quantity)
-            item.book.quantity_available -= item.quantity
-            item.book.save()
-        cart_items.delete()
-        return redirect('order_confirmation') 
-    return redirect('checkout')
+        form = ShippingAddressForm(request.POST)
+        try:
+            if form.is_valid():
+                shipping_address = form.save(commit=False)
+                shipping_address.user = request.user
+                shipping_address.is_default = True 
+                shipping_address.save()
+
+                ShippingAddress.objects.filter(user=request.user).exclude(id=shipping_address.id).update(is_default=False)
+
+                messages.success(request, 'Shipping address added successfully.')
+            else:
+                messages.error(request, 'Invalid shipping address data. Please check your inputs.')
+        except Exception as e:
+            messages.error(request, 'An error occurred while adding the shipping address. Please try again later.')
+        return redirect('checkout')  
+    else:
+        form = ShippingAddressForm()
+    
+    return render(request, 'add_address.html', {'form': form})
+
 
 
 

@@ -4,23 +4,12 @@
 
 {% block content %}
 {% load static %}
-<style>
-    
-    .table {
-        border-collapse: separate;
-        border-spacing: 0 15px; 
-    }
-
-    .table th, .table td {
-        border: 1px solid #dddddd; /* Add borders for a clean look */
-        padding: 8px; /* Add padding for spacing within cells */
-    }
-</style>
 
 <center><br/>
 <h1>Your Shopping Cart</h1>
-<div class="container"></div>
-
+<div class="container mt-4"></div>
+    {% if cart_items %}
+    <div class='table-responsive-sm'>
     <table class="table">
         <thead>
             <tr>
@@ -35,11 +24,12 @@
            
             {% for cart_item in cart_items %}
                 <tr>
-                    <!-- <img class="card-img-top" src="{% static 'images/book.jpg' %}" class="card-img-top" alt="{{ book.title }}"/> -->
-
-                    <td>{{ cart_item.book.title }}</td>
-                    
                     <td>
+                        {% comment %} <img src="{% static 'images/book.jpg' %}" class="img-thumbnail" alt="{{ book.title }} width='50"/> {% endcomment %}
+                        <span><b>{{ cart_item.book.title }}<b></span>
+                    </td>
+                
+                    <td>    
                         <form method="post" action="{% url 'update_cart' cart_item.id %}">
                             {% csrf_token %}
                             <input type="number" class="form-control" id="quantity" name="quantity" min="1" max="{{ book.available_quantity }}" value="{{ cart_item.quantity }}">
@@ -51,15 +41,20 @@
                     <td><a class="btn btn-sm btn-warning" href="{% url 'remove_from_cart' cart_item.id %}">Remove</a></td>
                 </tr>
             {% endfor %}
-            </div>
-        
+            
         </tbody>
     </table>
+    <div>
+   <div class="text-center mt-3"> 
+        <p>Total:&#8377; {{ cart_total }}</p>
+        <a href="{% url 'home'  %}"><button type="button" class="btn btn-sm btn-secondary">Back</button></a>
+        <a class="btn btn-sm btn-info" href="{% url 'checkout'  %}">Proceed to Checkout</a>
+   </div>
 
-    <p>Total:&#8377; {{ cart_total }}</p>
-<a href="{% url 'home'  %}"><button type="button" class="btn btn-sm btn-secondary">Back</button></a>
-<a class="btn btn-sm btn-info" href="{% url 'checkout'  %}">Proceed to Checkout</a>
-
+    {% else %}
+        <p>Your Cart is Empty</p>
+        <a href="{% url 'home' %}" class="btn btn-sm btn-secondary">Home</a>
+    {% endif %}
 </div>
 </center>
 {% endblock %}

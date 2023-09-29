@@ -1,18 +1,51 @@
 {% extends 'base.html' %}
 
+{% block title %}Log In{% endblock %}
+{% load static %}
+
 {% block content %}
 {% load crispy_forms_tags %} 
 
-<div class="container py-5">
-    <h1>Login</h1>
-    <form method="Post">
-        {% csrf_token %}
-        {{ login_form|crispy }}
-        <button class="btn btn-primary" type="submit">Login</button><br/>
-        <p><a href="{% url 'password_reset' %}">Forget Password!</a></p>
-    </form>
+
+ <div class="container py-5">
+        <h2 class="text-center text-primary"><b>Login<b></h2>
+        <form method="Post">
+            {% csrf_token %}
+            <div class="form-row justify-content-center">
+                <div class="col-6">
+                    {{ login_form.username|as_crispy_field }}   
+                </div>
+            </div>
+            <div class="form-row justify-content-center">
+                <div class="col-6">
+                    {{ login_form.password|as_crispy_field }}
+                </div>
+            </div>
+            <div class="form-row justify-content-center">
+                <div class="col-6">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="remember_me" id="remember_me">
+                        <label class="form-check-label" for="remember_me">
+                            Remember Me
+                        </label>
+                    </div>
+                </div>
+            </div><br>
+            <div class="text-center">
+                <button class="btn px-4 btn-primary" type="submit">Login</button>
+                <p><a class="text-center" href="{% url 'password_reset' %}">Forget Password!</a></p>
+            </div>
+            <br>
+                
+            {% if form.errors %}
+                <p class="text-center"><b>Invalid Username or Password.</b> <span class="text-danger">Please try again.</span></p>
+            {% endif %}
+        </form>
     
-    <p class="text-center">Don't have an account? <a href="/register">Create an account</a>.</p>
+        {% comment %} <p class="text-center">Don't have an account? <a href="/register">Create an account</a>.</p> {% endcomment %}
 </div>
 
 {% endblock %}
+
+<div class="form-row justify-content-center">
+    <div class="col-6">

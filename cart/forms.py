@@ -1,5 +1,5 @@
 from django.forms import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from .models import *
 from django.forms import ModelForm
@@ -26,13 +26,19 @@ class AddBookForm(ModelForm):
 	class Meta:
 		model = Book
 		fields = ('title','author','genre','price','available_quantity','image')
-		# labels = {
-		# 	'title': '',
-		# 	'author' : '',
-		# 	'genre' : '',
-		# 	'price' :'',
-		# 	'avialable_quantity': '',
-		# 	'image' : '',
-		# }
+		
 	
 
+class RememberMeAuthenticationForm(AuthenticationForm):
+    remember_me = forms.BooleanField(
+        required=False,
+        initial=True,
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+    )
+
+
+
+class ShippingAddressForm(forms.ModelForm):
+	class Meta:
+		model = ShippingAddress
+		fields = ['street', 'city', 'state', 'postal_code', 'country']
