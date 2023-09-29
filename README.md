@@ -1,18 +1,24 @@
-Create a virtual environment:
-pyhton -m venv .venv
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Bookstore Project</title>
+</head>
+  <body>
+    <section id="installation">
+        <h2>Installation</h2>
+        <ol>
+            <li>Clone the repository:
+                <pre><code>git clone https://github.com/yourusername/online-bookstore.git</code></pre>
+            </li>
+            <li>Create a virtual environment:
+                <pre><code>python -m venv venv</code></pre>
+            </li>
+            <!-- Add the remaining installation steps here -->
+        </ol>
+    </section>
+  </body>
+</html>
 
-Then, activate your virtual environment:
-For Linux - source .venv/bin/activate 
 
-Now install the requirement.txt file:
-pip install -r requirement.txt
-
-Set up the database:
-python manage.py makemigrations
-python manage.py migrate
-
-Create super user(admin):
-python manage.py createsuperuser
-
-Now run the server:
-python manage.py runserver
