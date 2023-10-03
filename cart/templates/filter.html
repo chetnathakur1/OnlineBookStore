@@ -21,6 +21,8 @@
                     <p class="card-text">{{ book.genre}}</p>
                     <p class="card-text">Author: {{ book.author }}</p>
                     <p class="card-text">Price: &#8377; {{ book.price }}</p>
+                    <a href="{% url 'bookview' book.pk %}" class="text-dark">  
+                        <button type="button" class="btn btn-sm btn-outline-info">Book Details</button></a>
                     <!-- <p class="card-text">Average Rating: {% if book.average_rating %}{{ book.average_rating|floatformat:'0' }} &#9733; out of 5 &#9733;{% else %}Not rated{% endif %}</p>
                     <a href="#" class="btn btn-primary">Add to Cart</a>
                     <a href="#" class="btn btn-warning">Buy</a> -->
