@@ -3,6 +3,8 @@
 {% block title %}Book View{% endblock %}
 
 {% block content %}
+{% load crispy_forms_tags %}
+
 {% load static %}
 <br/><br/>
 <center>
@@ -31,9 +33,14 @@
                     <input type="number" class="form-control" id="quantity" name="quantity" min="1" max="{{ book.available_quantity }}" value="{{ cart_item.quantity }}"> -->
                     
                     <a href="{% url 'home' %}"><button type="button" class="btn btn-sm btn-secondary">Back</button></a>
-                    <a class="btn btn-sm btn-info" href="{% url 'addtocart' book.id %}">Add to Cart</a>
+                    <form method="post" action="{% url 'addtocart' book.id %}">
+                        {% csrf_token %}
+                        {{ cart_form|crispy }}
+                        <a class="btn btn-sm btn-info" href="{% url 'addtocart' book.id %}">Add to Cart</a>
+                    </form>
+                    
                 </div>
-                </form>            
+                </form>             
             </div>
         </div>
 

@@ -2,3 +2,4 @@ __pycache__
 *.pyc
 .venv
 sent_emails
+my.cnf

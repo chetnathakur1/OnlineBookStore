@@ -88,6 +88,7 @@ def addbook(request):
 
 @login_required
 def addtocart(request, book_id):
+
     book = get_object_or_404(Book, id=book_id)
     try:
         quantity = int(request.POST.get('quantity', 1))
@@ -98,7 +99,7 @@ def addtocart(request, book_id):
         return redirect('viewcart')
     
     if quantity > book.available_quantity:
-        return render(request, 'emptycart.html', {'message': 'Cannot add more items than available.'})
+        return render(request, 'emptycart.html', {'message': 'Cannot add more items than available!'})
 
     user = request.user     
     created = Cart.objects.filter(user=user, book = book).first()
@@ -113,7 +114,8 @@ def addtocart(request, book_id):
     book.available_quantity -= quantity
     book.save()
     
-    return redirect('viewcart')
+    return redirect('bookview', book_id ) 
+    
 
 
 @login_required
@@ -178,12 +180,17 @@ def checkout(request):
 
     if request.method == 'POST':
         form = ShippingAddressForm(request.POST)
-        if form.is_valid():
-            shipping_address = form.save(commit=False)
-            shipping_address.user = user
-            shipping_address.save()
-            ShippingAddress.objects.filter(user=user).exclude(id=shipping_address.id).update(is_default=False)
-
+        try:
+            if form.is_valid():
+                shipping_address = form.save(commit=False)
+                shipping_address.user = user
+                shipping_address.save()
+                ShippingAddress.objects.filter(user=user).exclude(id=shipping_address.id).update(is_default=False)
+                messages.success(request, 'Shipping address added successfully.')
+            else:
+                messages.error(request, 'Invalid shipping address data. Please check your inputs.')
+        except Exception as e:
+            messages.error(request, 'An error occurred while adding the shipping address. Please try again later.')
             order = Order(user=user, total_amount=total_price)
             order.save()
             order.items.set(cart_items)
