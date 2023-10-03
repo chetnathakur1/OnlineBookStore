@@ -14,6 +14,7 @@
 </head>
 
 <body>
+  
   <div class="d-flex flex-column min-vh-100">
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
@@ -100,6 +101,18 @@
     </div>
 
 <br/><br/>
+<center>
+{% if messages %}
+ <div class="messages d-flex text-danger w-25">
+ {% for message in messages %}
+ <div class="alert alert-{{ message.tags }}">
+ {{ message }}
+ </div>
+ {% endfor %}
+ </div>
+ {% endif %}
+<center>
+  
 <footer class="p-3 mb-2 bg-info text-white ">
   {% comment %} py-4 {% endcomment %}
   <div class="container-fluid text-center text-md-left">
