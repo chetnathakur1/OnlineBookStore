@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from .models import Order 
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseNotFound
 
 
 def home(request):
@@ -26,6 +27,9 @@ class BookView(DetailView):
 	model = Book
 	template_name = 'bookview.html'
 
+
+def catch_all_view(request):
+    return HttpResponseNotFound("You know this page doesn't exist. 	&#128521; #404")
 
 def register_request(request):
 	if request.method == "POST":
@@ -86,7 +90,7 @@ def addbook(request):
     return render(request, 'addbook.html', {'form': form})
  
 
-@login_required
+@login_required(login_url='login')
 def addtocart(request, book_id):
 
     book = get_object_or_404(Book, id=book_id)
@@ -167,10 +171,11 @@ def remove_from_cart(request, cart_item_id):
 def checkout(request):
     user = request.user
     cart_items = Cart.objects.filter(user=user)
-
+    cart_total = 0  
     for item in cart_items:
-        item.total_price = item.book.price * item.quantity
-    total_price = sum(item.total_price for item in cart_items)
+        item.total_price = item.book.price * item.quantity  
+        cart_total += item.total_price 
+    
     try:
         default_shipping_address = ShippingAddress.objects.get(user=user, is_default=True)
     except ShippingAddress.DoesNotExist:
@@ -180,33 +185,37 @@ def checkout(request):
 
     if request.method == 'POST':
         form = ShippingAddressForm(request.POST)
-        try:
-            if form.is_valid():
-                shipping_address = form.save(commit=False)
-                shipping_address.user = user
-                shipping_address.save()
-                ShippingAddress.objects.filter(user=user).exclude(id=shipping_address.id).update(is_default=False)
-                messages.success(request, 'Shipping address added successfully.')
-            else:
-                messages.error(request, 'Invalid shipping address data. Please check your inputs.')
-        except Exception as e:
-            messages.error(request, 'An error occurred while adding the shipping address. Please try again later.')
-            order = Order(user=user, total_amount=total_price)
+        
+        if form.is_valid():
+            shipping_address = form.save(commit=False)
+            shipping_address.user = user
+            shipping_address.save()
+
+            ShippingAddress.objects.filter(user=user).exclude(id=shipping_address.id).update(is_default=False)
+       
+            order = Order(user=user, cart_total=cart_total)
             order.save()
             order.items.set(cart_items)
 
+            
+
+            messages.success(request,'Order Placed Successfully!')
             return redirect('home')
+
     else:
         form = ShippingAddressForm(instance=default_shipping_address)
     context = {
         'cart_items': cart_items,
-        'total_price': total_price,
+        'cart_total': cart_total,
         'form': form,
         'shipping_address': default_shipping_address,
-        'other_addresses': default_shipping_address,
+        'other_addresses': other_shipping_addresses,
     }
 
     return render(request, 'checkout.html', context)
+
+
+
 
 
 @login_required
@@ -233,6 +242,15 @@ def add_shipping_address(request):
     
     return render(request, 'add_address.html', {'form': form})
 
+
+@login_required
+def set_default_address(request, address_id):
+     address = get_object_or_404(ShippingAddress, pk=address_id, user = request.user)
+     address.is_default = True
+     address.save()
+     ShippingAddress.objects.filter(user=request.user).exclude(pk=address_id).update(is_default=False)
+     messages.success(request, 'Default address set successfully.')
+     return redirect('checkout')
 
 
 

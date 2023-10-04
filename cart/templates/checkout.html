@@ -3,16 +3,18 @@
 {% block title %}Checkout{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <h1 class="mb-4"><b><center>Order Summary</center></b></h1>
 
+<div class="container mt-5">
+    
+    <h1 class="text-info mb-4"><b><center>Order Summary</center></b></h1>
+    
     <!-- Cart Items Table -->
     <table class="table">
         <thead>
             <tr>
-                <th>Book Title</th>
+                <th>Book Title</th> 
                 <th>Quantity</th>
-                <th>Total Amount</th>
+                <th>Book Price</th>
             </tr>
         </thead>
         <tbody>
@@ -24,46 +26,52 @@
                 </tr>
             {% endfor %}
         </tbody>
+     
     </table>
-
-    <!-- Shipping Address Form -->
-    <div class="mb-4">
-        <h2><b>Shipping Address</b></h2>
-    </div>
-    <form method="post" action="{% url 'checkout' %}">
-        {% csrf_token %}
-
-        <!-- Street Address -->
-        <div class="mb-3">
-            <label for="street_address" class="form-label">Street Address</label>
-            <input type="text" class="form-control" id="street_address" name="street_address" required>
+        <p type="button" class="btn btn-sm btn-success float-right">Payable Amount:&#8377; {{ cart_total }}</p>
+            <br/><br/>
+        
+        <!-- Shipping Address Form -->  
+        <div class="card-header h3">
+            <h3><b>Shipping Address</b></h3>
+            <a href="{% url 'add_address' %}" class="btn  btn-sm btn-primary">Add Address</a>
         </div>
-
-        <!-- City -->
-        <div class="mb-3">
-            <label for="city" class="form-label">City</label>
-            <input type="text" class="form-control" id="city" name="city" required>
-        </div>
-
-        <!-- State -->
-        <div class="mb-3">
-            <label for="state" class="form-label">State</label>
-            <input type="text" class="form-control" id="state" name="state" required>
-        </div>
-
-        <!-- Postal Code -->
-        <div class="mb-3">
-            <label for="postal_code" class="form-label">Postal Code</label>
-            <input type="text" class="form-control" id="postal_code" name="postal_code" required>
-        </div>
-
-        <!-- Country -->
-        <div class="mb-3">
-            <label for="country" class="form-label">Country</label>
-            <input type="text" class="form-control" id="country" name="country" required>
-        </div>
-        <a href="{% url 'viewcart' %}"><button type="button" class="btn btn-sm btn-secondary">Back</button></a>
-        <button type="submit" class="btn btn-sm btn-success">Place Order</button>
-    </form>
+    
+        <div class="card-body">
+            <form method="POST" class="shipping-address-form">
+                {% csrf_token %}
+                <h5>Default Shipping Address:</h5>
+                <i><strong class="text-success">{{ shipping_address.street }}
+                    {{ shipping_address.city }},
+                    {{ shipping_address.state }},
+                    {{ shipping_address.postal_code }}
+                </strong></i><br><br>
+                <h5>Other Shipping Addresses:</h5>
+                {% if other_addresses %}
+                    <ul class="list-group">
+                        {% for address in other_addresses %}
+                        <li class="list-group-item">
+                            {{ address.street }},
+                            {{ address.city }},
+                            {{ address.state }},
+                            {{ address.postal_code }}
+                            {% if address.is_default %}
+                            (Default)
+                            {% else %}
+                            <a href="{% url 'set_default_address' address.id %}" class="btn btn-link btn-sm text-success">Set as Default</a>
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p>No other addresses available.</p>
+                    {% endif %}
+                </select>
+            </form>
+            
+        </div>   
+        <button type="submit" class="btn btn-sm btn-success float-right ml-1">Place Order</button>        
+        <a href="{% url 'viewcart' %}"><button type="button" class="btn btn-sm btn-secondary float-right">Back</button></a>
+           
 </div>
 {% endblock %}

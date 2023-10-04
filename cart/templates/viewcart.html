@@ -5,9 +5,10 @@
 {% block content %}
 {% load static %}
 
+<div class="container mt-5"></div>
 <center><br/>
-<h1>Your Shopping Cart</h1>
-<div class="container mt-4"></div>
+<h1 class="text-info"><b>Your Shopping Cart</b></h1>
+
     {% if cart_items %}
     <div class='table-responsive-sm'>
     <table class="table">
@@ -25,7 +26,7 @@
             {% for cart_item in cart_items %}
                 <tr>
                     <td>
-                        {% comment %} <img src="{% static 'images/book.jpg' %}" class="img-thumbnail" alt="{{ book.title }} width='50"/> {% endcomment %}
+                        <img src="{% static 'images/book.jpg' %}" alt="{{ item.book.title }}" class="img-thumbnail" width="200">
                         <span><b>{{ cart_item.book.title }}<b></span>
                     </td>
                 
@@ -46,7 +47,7 @@
     </table>
     <div>
    <div class="text-center mt-3"> 
-        <p>Total:&#8377; {{ cart_total }}</p>
+        {% comment %} <p class="text-success"><b>Total:&#8377; {{ cart_total }}</b></p> {% endcomment %}
         <a href="{% url 'home'  %}"><button type="button" class="btn btn-sm btn-secondary">Back</button></a>
         <a class="btn btn-sm btn-info" href="{% url 'checkout'  %}">Proceed to Checkout</a>
    </div>

@@ -6,6 +6,10 @@
 {% block content %}
 {% load crispy_forms_tags %} 
 
+{% if user.is_authenticated %}
+<strong><p class="text-bold text-success text-center mt-5">Welcome, {{ user.username }} !</p></strong>
+{% else %}
+
 
  <div class="container py-5">
         <h2 class="text-center text-primary"><b>Login<b></h2>
@@ -38,14 +42,12 @@
             <br>
                 
             {% if form.errors %}
-                <p class="text-center"><b>Invalid Username or Password.</b> <span class="text-danger">Please try again.</span></p>
+                <p class="text-center"><b>Invalid Username or Password!</b> <span class="text-danger">Please try again.</span></p>
             {% endif %}
         </form>
     
         {% comment %} <p class="text-center">Don't have an account? <a href="/register">Create an account</a>.</p> {% endcomment %}
 </div>
+{% endif %}
+{% endblock content %}
 
-{% endblock %}
-
-<div class="form-row justify-content-center">
-    <div class="col-6">

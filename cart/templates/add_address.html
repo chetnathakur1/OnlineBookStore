@@ -1,46 +1,24 @@
 {% extends "base.html" %}
 
+{% load crispy_forms_tags %}
+
 {% block title %}Add Shipping Address{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
-    <h1 class="mb-4"><b>Add Shipping Address</b></h1>
+    <div class='card'>
+        <br/>       
+        <h1 class="mb-4"><b><center>Add Shipping Address</center></b></h1>
 
-    <!-- Shipping Address Form -->
-    <form method="post" action="{% url 'add_shipping_address' %}">
-        {% csrf_token %}
-
-        <!-- Street Address -->
-        <div class="mb-3">
-            <label for="street_address" class="form-label">Street Address</label>
-            <input type="text" class="form-control" id="street_address" name="street_address" required>
+        <div class='card-body'>
+            <form method="post" class='mt-1'>
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button type="submit" class="btn btn-sm btn-primary">Save Address</button>
+                <a href="{% url 'checkout' %}"><button type="button" class="btn btn-sm btn-secondary ">Back</button></a>
+            </form>
         </div>
 
-        <!-- City -->
-        <div class="mb-3">
-            <label for="city" class="form-label">City</label>
-            <input type="text" class="form-control" id="city" name="city" required>
-        </div>
-
-        <!-- State -->
-        <div class="mb-3">
-            <label for="state" class="form-label">State</label>
-            <input type="text" class="form-control" id="state" name="state" required>
-        </div>
-
-        <!-- Postal Code -->
-        <div class="mb-3">
-            <label for="postal_code" class="form-label">Postal Code</label>
-            <input type="text" class="form-control" id="postal_code" name="postal_code" required>
-        </div>
-
-        <!-- Country -->
-        <div class="mb-3">
-            <label for="country" class="form-label">Country</label>
-            <input type="text" class="form-control" id="country" name="country" required>
-        </div>
-
-        <button type="submit" class="btn btn-success">Add Address</button>
-    </form>
+    </div>
 </div>
 {% endblock %}
