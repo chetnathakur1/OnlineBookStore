@@ -16,75 +16,62 @@
 </div><br/>
 </div>
 
-<div class = 'container'>
-    <div class="row">
-        {% for book in page_obj %}
-            <div class="col-md-4 mb-4">
-                <div class="card" style="width: 19rem;">
-                    <img class="card-img-top" src="{% static 'images/book.jpg' %}" class="card-img-top" alt="{{ book.title }}"/>
-                    <div class="card-body">
-                        <a href="{% url 'bookview' book.pk %}" class="text-dark">
-                        <h5 class="card-title">{{ book.title }}</h5></a>
-                        <p class="card-text">Author: {{ book.author }}</p>
-                        <p class="card-text">Price: &#8377; {{ book.price }}</p>
-                        <a href="{% url 'bookview' book.pk %}" class="text-dark">  
-                            <button type="button" class="btn btn-sm btn-outline-info">Book Details</button></a>
-                        {% if book.available_quantity > 0 %}
-                        <span  class="btn btn-sm btn-success text-white">In Stock</span>
-                        {% else %}
-                            <span class="btn btn-sm btn-danger text-white">Out of Stock</span>
-                        {% endif %}
-                        
-                        {% comment %} <!-- Example single danger button -->
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            View 
-                            </button>
-                            <div class="dropdown-menu"> 
-                            <a class="dropdown-item" href="#">Action</a>
-                            <a class="dropdown-item" href="#">Another action</a>
-                            <a class="dropdown-item" href="#">Something else here</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">Separated link</a>
-                            </div>
-                        </div> {% endcomment %}
+    <div class = 'container'>
+        <div class="row">
+            {% for book in page_obj %}
+                <div class="col-md-4 mb-4">
+                    <div class="card" style="width: 19rem;">
+                        <img class="card-img-top" src="{% static 'images/book.jpg' %}" class="card-img-top" alt="{{ book.title }}"/>
+                        <div class="card-body">
+                            <a href="{% url 'bookview' book.pk %}" class="text-dark">
+                            <h5 class="card-title">{{ book.title }}</h5></a>
+                            <p class="card-text">Author: {{ book.author }}</p>
+                            <p class="card-text">Price: &#8377; {{ book.price }}</p>
+                            <a href="{% url 'bookview' book.pk %}" class="text-dark">  
+                                <button type="button" class="btn btn-sm btn-outline-info">Book Details</button></a>
+                            {% if book.available_quantity > 0 %}
+                            <span  class="btn btn-sm btn-success text-white">In Stock</span>
+                            {% else %}
+                                <span class="btn btn-sm btn-danger text-white">Out of Stock</span>
+                            {% endif %}
+                            
+                        </div>
+
                     </div>
-
                 </div>
-            </div>
-        {% endfor %}
+            {% endfor %}
+        </div>
     </div>
-</div>
 
 
-<div class="container mt-4">
-    <ul class="pagination justify-content-center">
-        {% if page_obj.has_previous %}
-        
-            <li class="page-item">
-                <a class="page-link text-dark" href="?page=1">&laquo; First</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link text-dark" href="?page={{ page_obj.previous_page_number }}">Previous</a>
-            </li>
-        {% endif %}
+    <div class="container mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            
+                <li class="page-item">
+                    <a class="page-link text-dark" href="?page=1">&laquo; First</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link text-dark" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                </li>
+            {% endif %}
 
-        <li class="page-item active">
-            <span class="page-link text-dark">{{ page_obj.number }}</span>
-        </li>
+            <li class="page-item active">
+                <span class="page-link text-dark">{{ page_obj.number }}</span>
+            </li>
 
-        {% if page_obj.has_next %}
-            <li class="page-item">
-                <a class="page-link text-dark" href="?page={{ page_obj.next_page_number }}">Next</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link text-dark" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
-            </li>
-        {% endif %}
-    </ul>
-</div>
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link text-dark" href="?page={{ page_obj.next_page_number }}">Next</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link text-dark" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
     
-    
+       
 
 {% endblock %}
 

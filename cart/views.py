@@ -254,6 +254,8 @@ def set_default_address(request, address_id):
 
 
 
+
+
 def search_books(request):
 	if request.method == "POST":
 		searched = request.POST['searched']
