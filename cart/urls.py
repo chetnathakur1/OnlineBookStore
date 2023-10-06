@@ -1,13 +1,13 @@
 from django.urls import path
 from . import views
-from .views import BookView
+from .views import BookView, RegistrationView
 from django.contrib.auth import views as auth_views
 
 
 urlpatterns = [
     path("",views.home,name = 'home'),
     path('bookview/<int:pk>',BookView.as_view(),name='bookview'),  
-    path("register",views.register_request,name='register'),
+    path("register",RegistrationView.as_view(),name='register'),
     path("login",views.login_request,name="login"),
     path("logout",views.logout_request,name="logout"),
     path('addbook',views.addbook,name='addbook'),

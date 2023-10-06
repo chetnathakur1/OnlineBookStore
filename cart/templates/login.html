@@ -12,40 +12,44 @@
 
 
  <div class="container py-5">
-        <h2 class="text-center text-primary"><b>Login<b></h2>
-        <form method="Post">
-            {% csrf_token %}
-            <div class="form-row justify-content-center">
-                <div class="col-6">
-                    {{ login_form.username|as_crispy_field }}   
-                </div>
-            </div>
-            <div class="form-row justify-content-center">
-                <div class="col-6">
-                    {{ login_form.password|as_crispy_field }}
-                </div>
-            </div>
-            <div class="form-row justify-content-center">
-                <div class="col-6">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="remember_me" id="remember_me">
-                        <label class="form-check-label" for="remember_me">
-                            Remember Me
-                        </label>
+    <div class="card">
+        <div class="card-header">
+            <h2 class="text-center text-primary"><b>Login</b></h2>
+        </div>
+        <div class="card-body">
+            <form method="Post">
+                {% csrf_token %}
+                <div class="form-row justify-content-center">
+                    <div class="col-6">
+                        {{ login_form.username|as_crispy_field }}   
                     </div>
                 </div>
-            </div><br>
-            <div class="text-center">
-                <button class="btn px-4 btn-primary" type="submit">Login</button>
-                <p><a class="text-center" href="{% url 'password_reset' %}">Forget Password!</a></p>
-            </div>
-            <br>
-                
-            {% if form.errors %}
-                <p class="text-center"><b>Invalid Username or Password!</b> <span class="text-danger">Please try again.</span></p>
-            {% endif %}
-        </form>
-    
+                <div class="form-row justify-content-center">
+                    <div class="col-6">
+                        {{ login_form.password|as_crispy_field }}
+                    </div>
+                </div>
+                <div class="form-row justify-content-center">
+                    <div class="col-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="remember_me" id="remember_me">
+                            <label class="form-check-label" for="remember_me">
+                                Remember Me
+                            </label>
+                        </div>
+                    </div>
+                </div><br/>
+                <div class="text-center">
+                    <button class="btn px-4 btn-primary" type="submit">Login</button>
+                    <p><a class="text-center" href="{% url 'password_reset' %}">Forget Password!</a></p>
+                </div>
+                <br/>               
+                {% if form.errors %}
+                    <p class="text-center"><b>Invalid Username or Password!</b> <span class="text-danger">Please try again.</span></p>
+                {% endif %}
+            </form>
+        </div>
+    </div>
         {% comment %} <p class="text-center">Don't have an account? <a href="/register">Create an account</a>.</p> {% endcomment %}
 </div>
 {% endif %}

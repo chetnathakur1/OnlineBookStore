@@ -64,13 +64,19 @@
                         {% endfor %}
                     </ul>
                     {% else %}
-                    <p>No other addresses available.</p>
+                    <p>No other addresses available!</p>
                     {% endif %}
                 </select>
             </form>
             
         </div>   
-        <button type="submit" class="btn btn-sm btn-success float-right ml-1">Place Order</button>        
+        
+        <form method="POST" action="#">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-success float-right">Proceed to Payment</button>
+        </form>
+
+        {% comment %} <button type="submit" class="btn btn-sm btn-success float-right ml-1">Place Order</button>         {% endcomment %}
         <a href="{% url 'viewcart' %}"><button type="button" class="btn btn-sm btn-secondary float-right">Back</button></a>
            
 </div>

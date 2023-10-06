@@ -105,21 +105,21 @@
         {% endblock %}
     </div>
 
-<br/><br/>
-<center>
-{% if messages %}
- <div class="messages d-flex text-danger w-25">
- {% for message in messages %}
- <div class="alert alert-{{ message.tags }}">
- {{ message }}
- </div>
- {% endfor %}
- </div>
- {% endif %}
-<center>
-  
+    <br/><br/>
+    <center>
+    {% if messages %}
+    <div class="messages d-flex text-danger w-25">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">
+    {{ message }}
+    </div>
+    {% endfor %}
+    </div>
+    {% endif %}
+    <center>
+      
 
-<a href="/" type="button" class="btn btn-info btn-sm btn-block active" aria-pressed="true">Back to top</a>
+<a href="#" type="button" class="btn btn-info btn-sm btn-block active" aria-pressed="true">Back to top</a>
 <footer class="p-3 mb-2 bg-info text-white ">
   
     <div class="container-fluid text-center text-md-left">

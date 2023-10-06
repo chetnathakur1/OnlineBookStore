@@ -5,28 +5,21 @@ from .models import *
 from django.forms import ModelForm
 from django import forms
 
+	
+
 
 class NewUserForm(UserCreationForm):
-	email = models.EmailField(max_length=100,unique=True)
+    email = forms.EmailField(max_length=254, help_text='Required. Enter a valid email address.')
 
-	class Meta:
-		model = User
-		fields = ("username", "email", "password1", "password2")
+    class Meta:
+        model = User	    
+        fields = ('username', 'email', 'password1', 'password2')
 
-
-	def clean_email(self):
-		email = self.cleaned_data.get('email')
-		if User.objects.filter(email=email).exists():
-			raise forms.ValidationError("This email address is already in use. Please use a different email.")
-		return email
-	
-	def save(self, commit=True):
-		user = super(NewUserForm, self).save(commit=False)
-		user.email = self.cleaned_data['email']
-		if commit:
-			user.save()
-		return user
-	
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        if username[0].isdigit():
+            raise forms.ValidationError("Username cannot start with a numeric value!")
+        return username
 
 class AddBookForm(ModelForm):
 	

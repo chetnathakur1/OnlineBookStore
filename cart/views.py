@@ -6,42 +6,47 @@ from .forms import RememberMeAuthenticationForm
 from .models import *
 from django.views.generic import DetailView
 from django.contrib.auth.models import User
-from .models import Order 
+# from .models import Order 
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseNotFound
 
+# from django.contrib.auth.forms import UserCreationForm
+from django.urls import reverse_lazy
+from django.views.generic.edit import CreateView
 
 def home(request):
-	books=Book.objects.all()
-	paginator = Paginator(books, 9)
-	page_number = request.GET.get('page')
-	page_obj = paginator.get_page(page_number)
-	genre = Book.objects.values('genre').distinct()
-	context = {'page_obj': page_obj,'genre':genre}
-	return render(request, 'home.html',context)
-	
+    books=Book.objects.all()
+    paginator = Paginator(books, 9)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    genre = Book.objects.values('genre').distinct()
+    context = {'page_obj': page_obj,'genre':genre}
+    return render(request, 'home.html',context)
+    
 
 
 class BookView(DetailView):
-	model = Book
-	template_name = 'bookview.html'
+    model = Book
+    template_name = 'bookview.html'
 
 
 def catch_all_view(request):
     return HttpResponseNotFound("You know this page doesn't exist. 	&#128521; #404")
 
-def register_request(request):
-	if request.method == "POST":
-		form = NewUserForm(request.POST)
-		if form.is_valid():
-			user = form.save()
-			login(request, user)
-			messages.success(request, "Registration successful." )
-			return redirect("login")
-		messages.error(request, "Unsuccessful registration. Invalid information.")
-	form = NewUserForm()
-	return render (request=request, template_name="register.html", context={"register_form":form})
+
+
+class RegistrationView(CreateView):
+    form_class = NewUserForm
+    template_name = 'register.html'
+    success_url = reverse_lazy('login')
+
+    def form_valid(self, form):
+        user = form.save()
+        login(self.request, user)
+        return super().form_valid(form)
+
+
 
 
 def login_request(request):
@@ -73,9 +78,9 @@ def login_request(request):
 
 
 def logout_request(request):
-	logout(request)
-	messages.info(request,"You have successfully logged out.")
-	return redirect("home")
+    logout(request)
+    messages.info(request,"You have successfully logged out.")
+    return redirect("home")
 
 
  
@@ -89,6 +94,23 @@ def addbook(request):
         form = AddBookForm()
     return render(request, 'addbook.html', {'form': form})
  
+
+def search_books(request):
+    if request.method == "POST":
+        searched = request.POST['searched']
+        books = Book.objects.filter(title__contains=searched)
+
+        return render(request,'search.html',{'searched':searched, 'books':books})
+    else:
+       return render(request,'search.html',{})
+
+
+
+def filterbooks(request,category):
+    book_category = Book.objects.filter(genre=category)
+    genre = Book.objects.values('genre').distinct()
+    return render(request, 'filter.html', context={'book_category':book_category,'genre':genre})
+
 
 @login_required(login_url='login')
 def addtocart(request, book_id):
@@ -149,7 +171,7 @@ def update_cart(request, cart_item_id):
             cart_item.book.available_quantity  -= new_quantity
             cart_item.book.save()
     return redirect('viewcart')
-		
+        
 
 
 @login_required
@@ -251,26 +273,5 @@ def set_default_address(request, address_id):
      ShippingAddress.objects.filter(user=request.user).exclude(pk=address_id).update(is_default=False)
      messages.success(request, 'Default address set successfully.')
      return redirect('checkout')
-
-
-
-
-
-def search_books(request):
-	if request.method == "POST":
-		searched = request.POST['searched']
-		books = Book.objects.filter(title__contains=searched)
-
-		return render(request,'search.html',{'searched':searched, 'books':books})
-	else:
-	   return render(request,'search.html',{})
-
-
-
-def filterbooks(request,category):
-	book_category = Book.objects.filter(genre=category)
-	genre = Book.objects.values('genre').distinct()
-	return render(request, 'filter.html', context={'book_category':book_category,'genre':genre})
-			
 
 
