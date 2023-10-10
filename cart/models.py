@@ -1,30 +1,57 @@
+from collections.abc import Iterable
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.text import slugify
+
+
+class Genre(models.Model):
+    genre = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=100, unique=True) 
+    def __str__(self):
+        return self.genre
 
 
 class Book(models.Model):
     title = models.CharField(max_length=255)
     author = models.CharField(max_length=255)
-    genre = models.CharField(max_length=255)
+    genre = models.ForeignKey(Genre,on_delete = models.SET_NULL, null=True, blank=True)
     price = models.DecimalField(max_digits=10,decimal_places=2)
     available_quantity = models.PositiveIntegerField()
     image = models.ImageField(upload_to='images/', height_field=None, width_field=None, max_length=None,blank=True,null = True)
     created_on = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     updated_on = models.DateTimeField(auto_now=True, blank=True, null=True)
+    slug = models.SlugField(unique=True,blank=True, null=True)
 
 
     def __str__(self):
         return self.title + ' | ' + str(self.author)
     
     def decrease_quantity(self,quantity):
-        if self.available_quantity >= quantity:
+        if self.available_quantity >= quantity: 
             self.available_quantity -= quantity
             self.save()
 
-   
+    def get_unique_slug(self):
+        base_slug = slugify(self.title)
+        slug = base_slug
+        num = 1
+
+        while Book.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+            slug = f"{base_slug}-{num}"
+            num += 1
+
+        return slug
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = self.get_unique_slug()
+        super().save(*args, **kwargs)
+
+
+
 class Cart(models.Model):
-    user = models.ForeignKey(User, null=True,on_delete=models.CASCADE)
-    book = models.ForeignKey(Book,null=True,on_delete=models.SET_NULL)
+    user = models.ForeignKey(User, blank=True,null=True,on_delete=models.CASCADE)
+    book = models.ForeignKey(Book,blank=True,null=True,on_delete=models.SET_NULL)
     quantity = models.PositiveIntegerField(default=1)
     date_added = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     def __str__(self):

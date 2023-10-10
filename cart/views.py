@@ -6,12 +6,9 @@ from .forms import RememberMeAuthenticationForm
 from .models import *
 from django.views.generic import DetailView
 from django.contrib.auth.models import User
-# from .models import Order 
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseNotFound
-
-# from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
 
@@ -20,7 +17,7 @@ def home(request):
     paginator = Paginator(books, 9)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    genre = Book.objects.values('genre').distinct()
+    genre = Genre.objects.all().order_by('genre')
     context = {'page_obj': page_obj,'genre':genre}
     return render(request, 'home.html',context)
     
@@ -106,16 +103,18 @@ def search_books(request):
 
 
 
-def filterbooks(request,category):
-    book_category = Book.objects.filter(genre=category)
-    genre = Book.objects.values('genre').distinct()
+def filterbooks(request,genre_slug):
+    genre = get_object_or_404(Genre, slug=genre_slug)
+
+    book_category = Book.objects.filter(genre=genre)
+    genre = Genre.objects.all().order_by('genre')
     return render(request, 'filter.html', context={'book_category':book_category,'genre':genre})
 
 
 @login_required(login_url='login')
-def addtocart(request, book_id):
+def addtocart(request, slug):
 
-    book = get_object_or_404(Book, id=book_id)
+    book = get_object_or_404(Book, slug=slug)
     try:
         quantity = int(request.POST.get('quantity', 1))
         if quantity < 1:
@@ -140,7 +139,7 @@ def addtocart(request, book_id):
     book.available_quantity -= quantity
     book.save()
     
-    return redirect('bookview', book_id ) 
+    return redirect('bookview', slug) 
     
 
 

@@ -16,7 +16,7 @@
             <div class="card product-card" style="width: 19rem;">
                 <img class="card-img-top" src="{% static 'images/book.jpg' %}" class="card-img-top" alt="{{ book.title }}"/>
                 <div class="card-body">
-                    <a href="{% url 'bookview' book.id %}"class="text-dark" >
+                    <a href="{% url 'bookview' book.slug %}"class="text-dark" >
                     <h5 class="card-title">{{ book.title }}</h5></a>
                     <p class="card-text">{{ book.genre}}</p>
                     <p class="card-text">Author: {{ book.author }}</p>
