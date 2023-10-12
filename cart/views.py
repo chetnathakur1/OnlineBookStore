@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .forms import NewUserForm, AddBookForm, ShippingAddressForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
-from .forms import RememberMeAuthenticationForm
+from .forms import RememberMeAuthenticationForm, BookRatingForm 
 from .models import *
 from django.views.generic import DetailView
 from django.contrib.auth.models import User
@@ -31,7 +31,7 @@ def home(request):
 class BookView(DetailView):
     model = Book
     template_name = 'bookview.html'
-
+    
 
 def catch_all_view(request):
     return HttpResponseNotFound("This page doesn't exist. 	&#128521; #404")
@@ -280,7 +280,6 @@ def set_default_address(request, address_id):
 
 
 
-
 @login_required
 def rate_book(request, slug):
     if request.method == "POST":
@@ -295,17 +294,20 @@ def rate_book(request, slug):
                 book_rating.rating = rating
                 book_rating.save()
 
-
                 avg_rating = BookRating.objects.filter(book=book).aggregate(Avg('rating'))['rating__avg']
-                book.average_rating = avg_rating
+                book.avg_rating = avg_rating
                 book.save()
-
             else:
                 return render(request, 'error.html', {'message': 'Invalid rating range'})
         except ValueError:
             return render(request, 'error.html', {'message': 'Invalid rating format'})
 
     return redirect('bookview', slug=slug)
+
+
+
+
+
 
 
 

@@ -4,9 +4,9 @@
 {% load static %}
 
 {% block content %}
-    <center>
+    
         {% if searched %}
-            <h1>You searched for {{searched}} </h1>
+            <h1><center>You searched for {{searched}}</center> </h1>
             <br/>
             <div class = 'container'>
                 <div class="row">
@@ -19,13 +19,15 @@
                                 <h5 class="card-title">{{ book.title }}</h5></a>
                                 <p class="card-text">Author: {{ book.author }}</p>
                                 <p class="card-text">Price: &#8377; {{ book.price }}</p>
-                                <a href="{% url 'bookview' book.slug %}" class="text-dark">  
-                                    <button type="button" class="btn btn-sm btn-outline-info">Book Details</button></a>
-                                {% if book.available_quantity > 0 %}
-                                    <span  class="btn btn-sm btn-success text-white">In Stock</span>
-                                {% else %}
-                                        <span class="btn btn-sm btn-danger text-white">Out of Stock</span>
-                                {% endif %}
+                                <div class="d-flex justify-content-between">
+                                    <a href="{% url 'bookview' book.slug %}" class="text-dark">  
+                                        <button type="button" class="btn btn-sm btn-outline-info">Book Details</button></a>
+                                    {% if book.available_quantity > 0 %}
+                                        <span  class="btn btn-sm btn-success text-white">In Stock</span>
+                                    {% else %}
+                                            <span class="btn btn-sm btn-danger text-white">Out of Stock</span>
+                                    {% endif %}
+                                </div>
                                     <!-- <a href="#" class="btn btn-primary">Add to Cart</a> -->
                             </div>
                         </div>
@@ -38,6 +40,6 @@
                     <h1>Forget to Search!</h1>
                 {% endif %}
                 <a href="{% url 'home' %}"><button type="button" class="btn btn-sm btn-secondary">Back</button></a>
-    </center>
+
 
 {% endblock %}

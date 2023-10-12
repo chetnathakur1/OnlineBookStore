@@ -42,3 +42,11 @@ class ShippingAddressForm(forms.ModelForm):
 	class Meta:
 		model = ShippingAddress
 		fields = ['street', 'city', 'state', 'postal_code', 'country']
+
+class BookRatingForm(forms.Form):
+    rating = forms.IntegerField(
+        label='Rating',
+        min_value=1,
+        max_value=5,
+        widget=forms.NumberInput(attrs={'class': 'rating'}),
+    )

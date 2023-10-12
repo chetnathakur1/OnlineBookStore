@@ -19,16 +19,33 @@
             <div class="card">
                 <div class="card-body">
                     <h2 class="card-title"><b>{{ book.title }}</b></h2>
-                    <p class="card-text">By: {{ book.author }}</p>
-                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <p class="card-text text-lg mb-0">By: {{ book.author }}</p>
+                        <p class="card-text text-lg mb-0"><b>Price: &#8377; {{ book.price }}</b></p>
+                    </div>
+                    <hr class="mt-2">
+
                     <p class="card-text">Genre: {{ book.genre }}</p>
-                    <p class="card-text">Price: &#8377; {{ book.price }}</p>
+                    <!-- <p class="card-text">Price: &#8377; {{ book.price }}</p> -->
                     {% if book.available_quantity < 0 %}
                         <span class="btn btn-sm btn-danger text-white">Out of Stock</span>
                     {% else %}
-                        <p class="card-text text-danger">Available Quantity: {{ book.available_quantity }}</p>
-                   
-                        <p class="card-text">Avg Rating:  {% if book.avg_rating %} {{book.avg_rating|floatformat:'0'  }}  {% else %}Not Rated{% endif %} </p> 
+                        <p class="card-text text-danger">Available Quantity: {{ book.available_quantity }}</p>                     
+                        <p class="card-text">Average Rating:
+                            {% if book.avg_rating %}
+                                {% with book.avg_rating|floatformat:"1" as avg_rating %}
+                                    {% for i in avg_rating %}
+                                        &#9733;
+                                    {% endfor %}
+                                {% endwith %}
+                                ({{ book.avg_rating|floatformat:"1" }})
+                            {% else %}
+                                Not Rated
+                            {% endif %}
+                        </p>
+
+                        
+                         
 
                         {% if user.is_authenticated %}
                                 {% comment %} {% if book.avg_rating %}
@@ -37,8 +54,9 @@
                             
                                 <form method="post" action="{% url 'rate_book' book.slug %}">
                                     {% csrf_token %}
-                                    <div class="form-group">
-                                        <label for="rating">Rate this book:</label>
+                                    <label for="rating">Rate this book:</label>
+                                    <div class="form-group">                                       
+                                
                                         <select class="form-control" id="rating" name="rating">
                                             <option value="5">5 (Excellent)</option>
                                             <option value="4">4 (Good)</option>

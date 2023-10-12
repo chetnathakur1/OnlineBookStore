@@ -46,7 +46,7 @@
               </a>
               <div class="dropdown-menu" aria-labelledby="genreDropdown">
                 {% for item in genre %}
-                <a class="dropdown-item" href="{% url 'filterbygenre' item.genre %}">{{ item.genre }}</a>
+                <a class="dropdown-item" href="{% url 'filterbygenre' item.slug %}">{{ item.genre }}</a>
                 {% endfor %}
               </div>
             </li>

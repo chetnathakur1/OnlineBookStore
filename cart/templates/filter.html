@@ -18,10 +18,11 @@
                 <div class="card-body">
                     <a href="{% url 'bookview' book.slug %}"class="text-dark" >
                     <h5 class="card-title">{{ book.title }}</h5></a>
-                    <p class="card-text">{{ book.genre}}</p>
+                    <!-- <p class="card-text">{{ book.genre}}</p> -->
                     <p class="card-text">Author: {{ book.author }}</p>
                     <p class="card-text">Price: &#8377; {{ book.price }}</p>
-                    <a href="{% url 'bookview' book.pk %}" class="text-dark">  
+                    <div class="d-flex justify-content-between">
+                    <a href="{% url 'bookview' book.slug %}" class="text-dark">  
                         <button type="button" class="btn btn-sm btn-outline-info">Book Details</button></a>
                     <!-- <p class="card-text">Average Rating: {% if book.average_rating %}{{ book.average_rating|floatformat:'0' }} &#9733; out of 5 &#9733;{% else %}Not rated{% endif %}</p>
                     <a href="#" class="btn btn-primary">Add to Cart</a>
@@ -31,7 +32,7 @@
                     {% else %}
                         <span class="btn btn-sm btn-danger text-white">Out of Stock</span>
                     {% endif %}
-                    
+                </div>
                 </div>
             </div>
         </div>
