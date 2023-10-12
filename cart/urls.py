@@ -19,6 +19,7 @@ urlpatterns = [
     path('add_address',views.add_shipping_address,name='add_address'),
     path('search',views.search_books,name='search'),
     path('filterbygenre/<str:genre_slug>',views.filterbooks,name='filterbygenre'),
+    path('rate/<slug:slug>/', views.rate_book, name='rate_book'),
 
     path('password_reset/', auth_views.PasswordResetView.as_view(
         template_name='password_reset/password_reset.html',

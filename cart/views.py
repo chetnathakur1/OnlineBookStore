@@ -11,14 +11,19 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseNotFound
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
+from django.db.models import Avg
 
 def home(request):
-    books=Book.objects.all()
+    books=Book.objects.all().order_by()
     paginator = Paginator(books, 9)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     genre = Genre.objects.all().order_by('genre')
-    context = {'page_obj': page_obj,'genre':genre}
+    if request.user.is_authenticated:
+        user_ratings = BookRating.objects.filter(user=request.user, book__in=books)
+    else:
+        user_ratings = None
+    context = {'page_obj': page_obj,'genre':genre, 'user_ratings': user_ratings}
     return render(request, 'home.html',context)
     
 
@@ -29,7 +34,7 @@ class BookView(DetailView):
 
 
 def catch_all_view(request):
-    return HttpResponseNotFound("You know this page doesn't exist. 	&#128521; #404")
+    return HttpResponseNotFound("This page doesn't exist. 	&#128521; #404")
 
 
 
@@ -188,7 +193,7 @@ def remove_from_cart(request, cart_item_id):
 
 
 
-@login_required
+@login_required(login_url='login')
 def checkout(request):
     user = request.user
     cart_items = Cart.objects.filter(user=user)
@@ -273,4 +278,36 @@ def set_default_address(request, address_id):
      messages.success(request, 'Default address set successfully.')
      return redirect('checkout')
 
+
+
+
+@login_required
+def rate_book(request, slug):
+    if request.method == "POST":
+        book = get_object_or_404(Book, slug=slug)
+        rating = request.POST.get('rating')
+        user = request.user
+
+        try:
+            rating = int(rating)
+            if 1 <= rating <= 5:
+                book_rating, created = BookRating.objects.get_or_create(user=user, book=book)
+                book_rating.rating = rating
+                book_rating.save()
+
+
+                avg_rating = BookRating.objects.filter(book=book).aggregate(Avg('rating'))['rating__avg']
+                book.average_rating = avg_rating
+                book.save()
+
+            else:
+                return render(request, 'error.html', {'message': 'Invalid rating range'})
+        except ValueError:
+            return render(request, 'error.html', {'message': 'Invalid rating format'})
+
+    return redirect('bookview', slug=slug)
+
+
+
+ 
 

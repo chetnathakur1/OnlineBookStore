@@ -2,7 +2,7 @@ from collections.abc import Iterable
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.text import slugify
-
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Genre(models.Model):
     genre = models.CharField(max_length=255)
@@ -21,7 +21,7 @@ class Book(models.Model):
     created_on = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     updated_on = models.DateTimeField(auto_now=True, blank=True, null=True)
     slug = models.SlugField(unique=True,blank=True, null=True)
-
+    avg_rating = models.FloatField(default=0)
 
     def __str__(self):
         return self.title + ' | ' + str(self.author)
@@ -99,3 +99,13 @@ class ShippingAddress(models.Model):
 
     def __str__(self):
         return f"{self.user.username}'s Shipping Address"
+    
+
+
+class BookRating(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    rating = models.IntegerField(default=1, validators= [MinValueValidator(1), MaxValueValidator(5)])    
+
+    def __str__(self):
+        return f" {self.book.title}: {self.rating}"

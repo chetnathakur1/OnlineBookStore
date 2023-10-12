@@ -23,17 +23,27 @@
                         <img class="card-img-top" src="{% static 'images/book.jpg' %}" class="card-img-top" alt="{{ book.title }}"/>
                         <div class="card-body">
                             <a href="{% url 'bookview' book.slug %}" class="text-dark">
-                            <h5 class="card-title">{{ book.title }}</h5></a>
+                            <h5 class="card-title"><b>{{ book.title }}</b></h5></a>
                             <p class="card-text">Author: {{ book.author }}</p>
-                            <p class="card-text">Price: &#8377; {{ book.price }}</p>
-                            <a href="{% url 'bookview' book.slug %}" class="text-dark">  
-                                <button type="button" class="btn btn-sm btn-outline-info">Book Details</button></a>
-                            {% if book.available_quantity > 0 %}
-                            <span  class="btn btn-sm btn-success text-white">In Stock</span>
-                            {% else %}
-                                <span class="btn btn-sm btn-danger text-white">Out of Stock</span>
-                            {% endif %}
-                            
+                            <div class="d-flex justify-content-between">
+                                <p class="card-text">Price: &#8377; {{ book.price }}</p>
+                                <b><p class="card-text">
+                                      {% if book.avg_rating %} 
+                                        Avg Rating: {{book.avg_rating|floatformat:'0'  }}
+                                      {% else %}
+                                        Not Rated
+                                      {% endif %} </p>
+                                </b>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <a href="{% url 'bookview' book.slug %}" class="text-dark">  
+                                    <button type="button" class="btn btn-sm btn-outline-info">Book Details</button></a>
+                                {% if book.available_quantity > 0 %}
+                                <span  class="btn btn-sm btn-success text-white">In Stock</span>
+                                {% else %}
+                                    <span class="btn btn-sm btn-danger text-white">Out of Stock</span>
+                                {% endif %}
+                            </div>
                         </div>
 
                     </div>

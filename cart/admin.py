@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Genre, Book, Cart, Order, OrderItem, ShippingAddress
+from .models import Genre, Book, Cart, Order, OrderItem, ShippingAddress, BookRating
 
 
 
@@ -7,6 +7,7 @@ admin.site.register(Cart)
 admin.site.register(Order)
 admin.site.register(OrderItem)
 admin.site.register(ShippingAddress)
+admin.site.register(BookRating)
 
 class BookAdmin(admin.ModelAdmin):
     list_display = ('title', 'author', 'genre','price', 'available_quantity')

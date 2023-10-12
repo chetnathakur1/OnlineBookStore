@@ -31,17 +31,22 @@
                 </div>
                 <div class="form-row justify-content-center">
                     <div class="col-6">
+                        
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="remember_me" id="remember_me">
-                            <label class="form-check-label" for="remember_me">
-                                Remember Me
-                            </label>
+                            <div class="d-flex justify-content-between">
+                                <input class="form-check-input" type="checkbox" name="remember_me" id="remember_me">
+                                <label class="form-check-label" for="remember_me">
+                                    Remember Me
+                                </label>
+                                <p><a class="text-center" href="{% url 'password_reset' %}">Forget Your Password?</a></p>
+                            </div>
                         </div>
                     </div>
                 </div><br/>
                 <div class="text-center">
-                    <button class="btn px-4 btn-primary" type="submit">Login</button>
-                    <p><a class="text-center" href="{% url 'password_reset' %}">Forget Password!</a></p>
+                    <button class="btn px-4 btn-primary" type="submit">Login</button><br/>
+                    <br/>
+                    <p class="text-center">New to BookStore?<a href="/register">Sign Up</a></p>
                 </div>
                 <br/>               
                 {% if form.errors %}
@@ -50,7 +55,7 @@
             </form>
         </div>
     </div>
-        {% comment %} <p class="text-center">Don't have an account? <a href="/register">Create an account</a>.</p> {% endcomment %}
+        
 </div>
 {% endif %}
 {% endblock content %}

@@ -18,7 +18,7 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-body">
-                    <h2 class="card-title"><b>{{ book.title }}<b>   </h2>
+                    <h2 class="card-title"><b>{{ book.title }}</b></h2>
                     <p class="card-text">By: {{ book.author }}</p>
                     <hr>
                     <p class="card-text">Genre: {{ book.genre }}</p>
@@ -26,20 +26,56 @@
                     {% if book.available_quantity < 0 %}
                         <span class="btn btn-sm btn-danger text-white">Out of Stock</span>
                     {% else %}
-                        <p class="card-text">Available Quantity: {{ book.available_quantity }}</p>
+                        <p class="card-text text-danger">Available Quantity: {{ book.available_quantity }}</p>
+                   
+                        <p class="card-text">Avg Rating:  {% if book.avg_rating %} {{book.avg_rating|floatformat:'0'  }}  {% else %}Not Rated{% endif %} </p> 
 
+                        {% if user.is_authenticated %}
+                                {% comment %} {% if book.avg_rating %}
+                                    <p>Rating: {{ book.avg_rating }}</p>
+                                {% else %}   {% endcomment %}
+                            
+                                <form method="post" action="{% url 'rate_book' book.slug %}">
+                                    {% csrf_token %}
+                                    <div class="form-group">
+                                        <label for="rating">Rate this book:</label>
+                                        <select class="form-control" id="rating" name="rating">
+                                            <option value="5">5 (Excellent)</option>
+                                            <option value="4">4 (Good)</option>
+                                            <option value="3">3 (Average)</option>
+                                            <option value="2">2 (Poor)</option>
+                                            <option value="1">1 (Terrible)</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-sm btn-primary">Submit Rating</button>
+                                </form>
+                                {% comment %} {% endif %} {% endcomment %}
+                        {% else %}
+                            <div class="text-dark"> 
+                                Log in to rate this book. Your feedback matters!
+                                <a href="{% url 'login' %}" class="btn btn-sm btn-primary">Log In</a>
+                            </div>
+
+                        {% endif %}
                         
+
+                        <br/>
                         <form method="post" action="{% url 'addtocart' book.slug %}">
                             {% csrf_token %}
                             {{ cart_form|crispy }}
-                            <a href="{% url 'home' %}" class="btn btn-sm btn-secondary">Back</a>    
-                            <button type="submit" class="btn btn-sm btn-info">Add to Cart</button>
+                            <div class="d-flex justify-content-between">
+                                <a href="{% url 'home' %}" class="btn btn-sm btn-secondary">Back</a>  
+                                <div>
+                                <a class="btn btn-sm btn-success" href="{% url 'checkout'  %}">Buy</a>  
+                                <button type="submit" class="btn btn-sm btn-info">Add to Cart</button>
+                                </div>
+                            </div>  
                         </form>
                     {% endif %}
                 </div>
             </div>
         </div>
-    </div>
+    </div>  
 </div>
 
 {% endblock %}
